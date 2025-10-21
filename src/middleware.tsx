@@ -1,10 +1,24 @@
-export { default } from "next-auth/middleware"
+import { getToken } from 'next-auth/jwt';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export const config = { matcher: ["/profile"] }
+export async function middleware(req: NextRequest) {
+    const token = await getToken({
+        req,
+        secret: process.env.NEXTAUTH_SECRET
+    });
 
-// If you only want to secure certain pages, export a config
-// object with a matcher
-// Now you will still be able to visit every page,
-// but only /profile will require authentication.
-// If a user is not logged in, the default behavior is to
-// redirect them to the sign-in page.
+    // token will be null if no session exists
+    if (!token) {
+        return NextResponse.redirect(new URL('/login', req.url));
+    }
+
+    // Optional: access token data
+    // token.email, token.sub (user id), etc.
+
+    return NextResponse.next();
+}
+
+export const config = {
+    matcher: ['/profile']
+};

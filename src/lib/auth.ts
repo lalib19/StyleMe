@@ -1,4 +1,8 @@
 import { hash, compare } from "bcryptjs";
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/src/lib/authOptions';
+
+export const auth = () => getServerSession(authOptions);
 
 export async function hashPassword(password: string) {
     const hashedPassword = await hash(password, 12);

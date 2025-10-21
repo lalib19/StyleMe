@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectToDb } from '@/src/lib/db';
 import { User, Credentials } from '@/src/types/index';
+import { verifyPassword } from "./auth";
 
 export const authOptions: NextAuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
@@ -24,10 +25,24 @@ export const authOptions: NextAuthOptions = {
                     email: credentials.email
                 });
 
-                if (user) {
-                    return user
+                if (!user) {
+                    client.close();
+                    throw new Error("No user found");
                 }
-                return null;
+
+                const isValid = await verifyPassword(
+                    credentials.password,
+                    user.password
+                );
+
+                if (!isValid) {
+                    console.log("Invalid password");
+                    client.close();
+                    throw new Error("could not login");
+                }
+                console.log("User authenticated:", user.email);
+                client.close();
+                return { id: user._id.toString(), email: user.email };
             }
         })
     ]
