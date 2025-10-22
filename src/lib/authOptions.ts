@@ -20,29 +20,34 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 const client = await connectToDb();
-                const usersCollection = client.db().collection("users");
-                const user: User | null = await usersCollection.findOne<User>({
-                    email: credentials.email
-                });
 
-                if (!user) {
-                    client.close();
-                    throw new Error("No user found");
+                try {
+                    const usersCollection = client.db().collection("users");
+                    const user: User | null = await usersCollection.findOne<User>({
+                        email: credentials.email
+                    });
+
+                    if (!user) {
+                        throw new Error("No user found");
+                    }
+
+                    const isValid = await verifyPassword(
+                        credentials.password,
+                        user.password
+                    );
+
+                    if (!isValid) {
+                        throw new Error("Could not log in");
+                    }
+
+                    console.log("User authenticated:", user.email);
+                    return { id: user._id.toString(), email: user.email };
+                } catch (error) {
+                    console.error("Auth error:", error);
+                    throw error;
+                } finally {
+                    await client.close();
                 }
-
-                const isValid = await verifyPassword(
-                    credentials.password,
-                    user.password
-                );
-
-                if (!isValid) {
-                    console.log("Invalid password");
-                    client.close();
-                    throw new Error("could not login");
-                }
-                console.log("User authenticated:", user.email);
-                client.close();
-                return { id: user._id.toString(), email: user.email };
             }
         })
     ]
