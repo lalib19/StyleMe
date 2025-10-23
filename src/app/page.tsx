@@ -1,9 +1,11 @@
 import AuthForm from "../components/auth-form";
+import HomePage from "./home";
 
-export default function Home() {
+export default function Page() {
     return (
-        <div>
-            <AuthForm />
+        <div className="flex flex-col items-center justify-center min-h-screen p-10 ">
+            <HomePage />
+            {/* <AuthForm /> */}
         </div>
     )
 }

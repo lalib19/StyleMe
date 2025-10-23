@@ -1,46 +1,36 @@
-"use client"
+import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+export default function HomePage() {
     return (
-        <main>
-            <p>
-                Bienvenue sur Linguistica, nous vous proposons de vous enseigner plus de 30 langues par nos 205 intervenants répartis dans toute la France.
-            </p>
-            <p>
-                Choissisez les langues que vous souhaitez étudier et nous vous proposerons une forumle adaptée à vos besoins.
-            </p>
-            <form action="">
-                {/* <select name="" id="">
-          <option value="Français">Français</option>
-          <option value="Anglais">Anglais</option>
-          <option value="Espagnol">Espagnol</option>
-          <option value="Allemand">Allemand</option>
-          <option value="Italien">Italien</option>
-          <option value="Portugais">Portugais</option>
-          <option value="Arabe">Arabe</option>
-          <option value="Chinois">Chinois</option>
-          <option value="Russe">Russe</option>
-        </select> */}
-                <fieldset>
-                    <legend>Which country</legend>
-                    <div className="control">
-                        <input type="checkbox" id="français" name="acquisition" value="français" />
-                        <label htmlFor="français">Français</label>
-                    </div>
-                    <div className="control">
-                        <input type="checkbox" id="français" name="acquisition" value="français" />
-                        <label htmlFor="français">Français</label>
-                    </div>
-                    <div className="control">
-                        <input type="checkbox" id="français" name="acquisition" value="français" />
-                        <label htmlFor="français">Français</label>
-                    </div>
-                    <div className="control">
-                        <input type="checkbox" id="français" name="acquisition" value="français" />
-                        <label htmlFor="français">Français</label>
-                    </div>
-                </fieldset>
-            </form>
+        <main className="flex flex-col items-center">
+            <h1 className="text-4xl font-bold">Bienvenue sur StyleMe</h1>
+            <p className="mt-4">Begin browsing clothing items to see what you like!</p>
+            <div className="flex gap-8 items-center justify-center h-screen">
+                <Link href="/men" className="group">
+                    <Image
+                        src="/images/belle-personne-bielorusse-dans-la-ville.jpg"
+                        alt="Men"
+                        width={400}
+                        height={300}
+                        style={{ width: "auto", height: "auto" }}
+                        className="rounded-lg shadow-lg transition-transform group-hover:scale-105"
+                        priority
+                    />
+                </Link>
+
+                <Link href="/women" className="group">
+                    <Image
+                        src="/images/femme-dans-un-costume-pres-du-mur-de-brique.jpg"
+                        alt="Women"
+                        width={400}
+                        height={300}
+                        style={{ width: "auto", height: "auto" }}
+                        className="rounded-lg shadow-lg transition-transform group-hover:scale-105"
+                        priority
+                    />
+                </Link>
+            </div>
         </main>
     );
 }
