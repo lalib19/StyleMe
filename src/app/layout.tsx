@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from "next";
 import SessionProvider from "../lib/SessionProvider";
+import MainNavigation from '../components/layout/main-navigation';
 
 export const metadata: Metadata = {
   title: "Linguistica",
@@ -15,8 +16,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning>
+      <body>
         <SessionProvider>
+          <MainNavigation />
           {children}
         </SessionProvider>
       </body>

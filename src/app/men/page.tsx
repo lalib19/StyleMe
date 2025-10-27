@@ -1,4 +1,4 @@
-import ClothingPage from "@/src/components/clothing-page";
+import ClothingGrid from "@/src/components/clothes/clothing-grid";
 
 export default async function MenPage() {
     let items: any[] = [];
@@ -23,7 +23,7 @@ export default async function MenPage() {
         <div>
 
             <h1>Men Page</h1>
-            <ClothingPage items={items} />
+            <ClothingGrid items={items} />
         </div>
     )
 }

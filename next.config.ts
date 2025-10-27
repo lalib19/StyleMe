@@ -1,15 +1,19 @@
 import type { NextConfig } from "next";
-
+import path from 'path';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-export default nextConfig;
-
-const path = require('path')
-module.exports = {
   turbopack: {
     root: path.join(__dirname, '..'),
   },
-}
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.asos-media.com',
+        pathname: '/**',
+      },
+    ],
+  },
+};
+
+export default nextConfig;

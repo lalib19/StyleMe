@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function HomePage() {
+export default function Hero() {
     return (
         <main className="flex flex-col items-center">
             <h1 className="text-4xl font-bold">Bienvenue sur StyleMe</h1>
