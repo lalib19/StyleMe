@@ -10,8 +10,8 @@ export default function MainNavigation() {
             <nav>
                 <ul className="flex space-x-4">
                     <li><Link href="/">Home</Link></li>
-                    <li><Link href="/men">Men</Link></li>
-                    <li><Link href="/women">Women</Link></li>
+                    <li><Link href="/clothes/men">Men</Link></li>
+                    <li><Link href="/clothes/women">Women</Link></li>
                     <li><Link href="/about">About</Link></li>
                     <li><Link href="/contact">Contact</Link></li>
                 </ul>

@@ -7,9 +7,9 @@ export default function Hero() {
             <h1 className="text-4xl font-bold">Bienvenue sur StyleMe</h1>
             <p className="mt-4">Begin browsing clothing items to see what you like!</p>
             <div className="flex gap-8 items-center justify-center h-screen">
-                <Link href="/men" className="group">
+                <Link href="/clothes/men" className="group" >
                     <Image
-                        src="/images/belle-personne-bielorusse-dans-la-ville.jpg"
+                        src="/images/mannequin-homme.jpg"
                         alt="Men"
                         width={400}
                         height={300}
@@ -19,9 +19,9 @@ export default function Hero() {
                     />
                 </Link>
 
-                <Link href="/women" className="group">
+                <Link href="/clothes/women" className="group" >
                     <Image
-                        src="/images/femme-dans-un-costume-pres-du-mur-de-brique.jpg"
+                        src="/images/mannequin-femme.jpg"
                         alt="Women"
                         width={400}
                         height={300}
@@ -31,6 +31,6 @@ export default function Hero() {
                     />
                 </Link>
             </div>
-        </main>
+        </main >
     );
 }
