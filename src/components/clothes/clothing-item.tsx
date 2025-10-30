@@ -4,9 +4,10 @@ export default async function ClothingItem({ items, gender }: { items: any[], ge
 
     return (
         items.map((item) => {
-            const newName = item.name.replace(" ", '-')
-            const linkPath = `/clothes/${gender}/${newName}`
+            const formattedName = item.name.replace(" ", '-')
+            const linkPath = `/clothes/${gender}/${formattedName}`
             const imageUrlPath = `https://${item.imageUrl}`
+
             return (
                 <li key={item.id} className="shadow-lg h-auto max-w-80"
                 >
@@ -18,7 +19,10 @@ export default async function ClothingItem({ items, gender }: { items: any[], ge
                             loading="lazy"
                             className="w-full h-auto object-cover"
                         />
-                        <p className="w-full py-4 px-2">{item.name}</p>
+                        <div className="flex p-4 text-sm items-center">
+                            <p className="w-2/3" >{item.name}</p>
+                            <p className="w-1/3 text-right">{item.price.current.text}</p>
+                        </div>
                     </Link>
                 </li>
             )
