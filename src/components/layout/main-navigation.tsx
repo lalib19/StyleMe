@@ -14,6 +14,7 @@ export default function MainNavigation() {
                     <li><Link href="/clothes/women">Women</Link></li>
                     <li><Link href="/about">About</Link></li>
                     <li><Link href="/contact">Contact</Link></li>
+                    <li><Link href="/favorites"><img src="/icons/icons8-heart-48-filled.png" alt="heart" height={24} width={24} /></Link></li>
                 </ul>
             </nav>
         </header>

@@ -2,11 +2,12 @@ import './globals.css';
 import type { Metadata } from "next";
 import SessionProvider from "../lib/SessionProvider";
 import MainNavigation from '../components/layout/main-navigation';
+import ReduxProvider from '../lib/ReduxProvider';
 
 export const metadata: Metadata = {
-  title: "Linguistica",
-  description: "Learn languages",
-  keywords: ["language", "learning", "linguistics", "education"],
+  title: "StyleMe",
+  description: "Style yourself in your favorite clothes using AI",
+  keywords: ["clothing", "fashion", "AI", "store"],
 };
 
 export default function RootLayout({
@@ -18,8 +19,10 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <SessionProvider>
-          <MainNavigation />
-          {children}
+          <ReduxProvider>
+            <MainNavigation />
+            {children}
+          </ReduxProvider>
         </SessionProvider>
       </body>
     </html>

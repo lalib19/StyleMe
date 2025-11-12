@@ -3,9 +3,10 @@ import Link from "next/link";
 
 export default function Hero() {
     return (
-        <main className="flex flex-col items-center">
-            <h1 className="text-4xl font-bold">Bienvenue sur StyleMe</h1>
-            <p className="mt-4">Begin browsing clothing items to see what you like!</p>
+        <main className="flex flex-col items-center h-screen">
+            <h1 className="text-4xl font-bold">Welcome to StyleMe</h1>
+            <p className="mt-4">Begin browsing clothing items and favorite them to add to your cart</p>
+            <p className="mt-4">Then from your favorites select which ones you would like to try on you !</p>
             <div className="flex gap-8 items-center justify-center h-screen">
                 <Link href="/clothes/men" className="group" >
                     <Image
