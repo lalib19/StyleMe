@@ -1,12 +1,12 @@
 "use client"
 
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@/src/store/hooks";
 import { selectItem } from "@/src/store/cart-slice";
 
 export default function ClothingItem({ items }: { items: any[] }) {
-    const dispatch = useDispatch();
-    const cart = useSelector((state: any) => state.cart.items);
+    const dispatch = useAppDispatch();
+    const cart = useAppSelector((state: any) => state.cart.items);
 
     const handleSelectItem = (id: number) => {
         dispatch(selectItem(id));
