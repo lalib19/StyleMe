@@ -12,7 +12,7 @@ export default function Input({ htmlFor, label, ref, className, ...props }: Inpu
         `${className} w-full p-1 border-b-2 border-stone-300 rounded-sm bg-stone-100 focus:outline-none focus:border-stone-600`;
 
     return (
-        <div className='flex flex-col items-center'>
+        <div className='flex flex-col items-center w-full max-w-xs mb-4'>
             <label className='' htmlFor={htmlFor}>{label}</label>
             <input
                 className={classes}

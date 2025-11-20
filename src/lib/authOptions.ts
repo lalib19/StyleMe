@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
                     );
 
                     if (!isValid) {
-                        throw new Error("Could not log in");
+                        throw new Error("Incorrect credentials");
                     }
 
                     console.log("User authenticated:", user.email);

@@ -3,9 +3,18 @@
 import Link from "next/link"
 import Logo from "./logo"
 import { useAppSelector } from "@/src/store/hooks"
+import { useSession, signOut } from "next-auth/react"
+import NavLink from "../ui/NavLink"
 
 export default function MainNavigation() {
     const items = useAppSelector((state: any) => state.cart.items);
+    const { data: session, status } = useSession();
+    // console.log("session:", session, "status:", status);
+
+    function handleSignOut() {
+        signOut();
+    }
+
     return (
         <header className="flex h-16 items-center justify-between px-8 bg-custom-bg-nav shadow-md">
             <Link href={"/"}>
@@ -13,11 +22,15 @@ export default function MainNavigation() {
             </Link>
             <nav>
                 <ul className="flex space-x-4">
-                    <li><Link href="/">Home</Link></li>
-                    <li><Link href="/clothes/men">Men</Link></li>
-                    <li><Link href="/clothes/women">Women</Link></li>
-                    <li><Link href="/about">About</Link></li>
-                    <li><Link href="/contact">Contact</Link></li>
+                    <li><NavLink href="/clothes/men">Men</NavLink></li>
+                    <li><NavLink href="/clothes/women">Women</NavLink></li>
+                    {session ? (
+                        <>
+                            <li><NavLink href="/api/auth/signout" onClick={handleSignOut} >Logout</NavLink></li>
+                        </>
+                    ) : (
+                        <li><NavLink href="/auth">Sign Up</NavLink></li>
+                    )}
                     <li className="relative"><Link href="/favorites">
                         <img src="/icons/icons8-heart-48-filled.png" alt="heart" height={24} width={24} />
                         {items.length > 0 && (

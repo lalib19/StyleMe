@@ -8,9 +8,16 @@ export async function middleware(req: NextRequest) {
         secret: process.env.NEXTAUTH_SECRET
     });
 
-    // token will be null if no session exists
-    if (!token) {
-        return NextResponse.redirect(new URL('/login', req.url));
+    const { pathname } = req.nextUrl;
+
+    // Redirect authenticated users away from auth pages
+    if (token && pathname.startsWith('/auth')) {
+        return NextResponse.redirect(new URL('/', req.url));
+    }
+
+    // Redirect unauthenticated users to login for protected routes  
+    if (!token && pathname.startsWith('/profile')) {
+        return NextResponse.redirect(new URL('/auth', req.url));
     }
 
     // Optional: access token data
@@ -20,5 +27,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/profile']
+    matcher: ['/profile', '/auth']
 };
