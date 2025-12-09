@@ -6,7 +6,7 @@ import { selectItem } from "@/src/store/cart-slice";
 
 export default function ClothingItem({ items }: { items: any[] }) {
     const dispatch = useAppDispatch();
-    const cart = useAppSelector((state: any) => state.cart.items);
+    const cart = useAppSelector((state) => state.cart.items);
 
     const handleSelectItem = (id: number) => {
         dispatch(selectItem(id));

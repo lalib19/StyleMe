@@ -1,12 +1,18 @@
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/src/lib/authOptions";
 import { getClothingItems } from "@/src/lib/clothing-fetch";
 import FavoriteItems from "../../components/clothes/favorites-items";
 import Link from "next/link";
 
 export default async function FavoritesPage() {
+    const session = await getServerSession(authOptions);
     const allClothingItems = await getClothingItems();
+
     return (
         <div className="flex flex-col items-center mt-8">
-            <p><Link href="/auth" className="underline">Connectez vous</Link> pour conserver vos favoris !</p>
+            {!session ? (
+                <p><Link href="/auth" className="underline">Sign In</Link> to register your favorites!</p>
+            ) : null}
             <FavoriteItems allClothingItems={allClothingItems} />
         </div>
     )

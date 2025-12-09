@@ -1,11 +1,10 @@
 "use client"
 
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
 import { useRef, useState, FormEvent } from "react"
 import Button from "./ui/Button"
 import Input from "./ui/Input"
-import { SemanticClassificationFormat } from "typescript"
+import { useAppSelector } from "../store/hooks"
 
 async function createUser(email: string, password: string) {
     const response = await fetch("/api/auth/signup", {
@@ -16,8 +15,22 @@ async function createUser(email: string, password: string) {
 
     const data = await response.json()
     if (!response.ok) {
-        throw new Error(data.message || "Simething went wrong")
+        throw new Error(data.message || "Something went wrong")
     }
+    return data
+}
+
+async function storeFavoriteItemsInDb(userEmail: string, favoriteItems: number[]) {
+    const response = await fetch("/api/favorites", {
+        method: "PUT",
+        body: JSON.stringify({ userEmail, favoriteItems }),
+        headers: { "Content-Type": "application/json" }
+    });
+    const data = await response.json()
+    if (!response.ok) {
+        throw new Error(data.error || "Failed to store favorite items")
+    }
+
     return data
 }
 
@@ -27,7 +40,8 @@ export default function AuthForm() {
     const [error, setError] = useState<string | null>(null)
     const emailInput = useRef<HTMLInputElement | null>(null)
     const passwordInput = useRef<HTMLInputElement | null>(null)
-    const router = useRouter()
+    const favoriteItems = useAppSelector((state) => state.cart.items);
+
 
     async function submitHandler(event: FormEvent) {
         event.preventDefault()
@@ -44,8 +58,16 @@ export default function AuthForm() {
         }
 
         if (hasAccount) {
+            // Store favorites BEFORE signing in to prevent navigation cancellation
+            if (favoriteItems && favoriteItems.length > 0) {
+                try {
+                    await storeFavoriteItemsInDb(enteredEmail, favoriteItems);
+                } catch (favoriteError) {
+                    console.error("Failed to store favorites:", favoriteError);
+                }
+            }
+
             const result = await signIn("credentials", {
-                redirect: false,
                 email: enteredEmail,
                 password: enteredPassword
             })
@@ -54,14 +76,18 @@ export default function AuthForm() {
                 setError(result.error ? result.error
                     : "Invalid email or password")
                 setIsLoading(false)
-            } else if (result?.ok) {
-                router.push("/")
             }
         } else {
             try {
-                const result = await createUser(enteredEmail, enteredPassword)
-                console.log(result);
+                const result = await createUser(enteredEmail, enteredPassword);
 
+                if (favoriteItems && favoriteItems.length > 0) {
+                    await storeFavoriteItemsInDb(enteredEmail, favoriteItems);
+                }
+                await signIn("credentials", {
+                    email: enteredEmail,
+                    password: enteredPassword
+                })
             } catch (error) {
                 setError(error instanceof Error ? error.message : "Something went wrong")
             } finally {

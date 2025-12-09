@@ -7,12 +7,12 @@ import { useSession, signOut } from "next-auth/react"
 import NavLink from "../ui/NavLink"
 
 export default function MainNavigation() {
-    const items = useAppSelector((state: any) => state.cart.items);
-    const { data: session, status } = useSession();
+    const items = useAppSelector((state) => state.cart.items);
+    const { data: session } = useSession();
     // console.log("session:", session, "status:", status);
 
     function handleSignOut() {
-        signOut();
+        signOut({ callbackUrl: "/" });
     }
 
     return (
@@ -26,7 +26,7 @@ export default function MainNavigation() {
                     <li><NavLink href="/clothes/women">Women</NavLink></li>
                     {session ? (
                         <>
-                            <li><NavLink href="/api/auth/signout" onClick={handleSignOut} >Logout</NavLink></li>
+                            <li><button className="text-lg hover:underline hover:cursor-pointer" onClick={handleSignOut} >Logout</button></li>
                         </>
                     ) : (
                         <li><NavLink href="/auth">Sign Up</NavLink></li>
