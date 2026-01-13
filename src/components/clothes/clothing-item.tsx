@@ -1,16 +1,15 @@
 "use client"
 
 import Link from "next/link";
-import { useAppDispatch, useAppSelector } from "@/src/store/hooks";
-import { selectItem } from "@/src/store/cart-slice";
+import { useAppSelector } from "@/src/store/hooks";
+import { useFavoriteActions } from "@/src/hooks/useFavoriteActions";
 
 export default function ClothingItem({ items }: { items: any[] }) {
-    const dispatch = useAppDispatch();
     const cart = useAppSelector((state) => state.cart.items);
+    const { toggleFavorite } = useFavoriteActions();
 
     const handleSelectItem = (id: number) => {
-        dispatch(selectItem(id));
-        console.log(cart);
+        toggleFavorite(id, cart);
     }
 
     return (

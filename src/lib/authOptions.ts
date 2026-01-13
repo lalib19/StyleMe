@@ -1,11 +1,12 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { connectToDb } from '@/src/lib/db';
+import { connectToDb, getFavoriteItemsFromDb } from '@/src/lib/db';
 import { User, Credentials } from '@/src/types/index';
 import { verifyPassword } from "./auth";
 
 export const authOptions: NextAuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
+    // session: { strategy: "jwt", maxAge: 24 * 60 * 60 },
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -51,4 +52,5 @@ export const authOptions: NextAuthOptions = {
             }
         })
     ]
+    // No callbacks needed - favorites will be fetched via custom hooks
 }

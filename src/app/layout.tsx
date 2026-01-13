@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import SessionProvider from "../lib/SessionProvider";
 import MainNavigation from '../components/layout/main-navigation';
 import ReduxProvider from '../lib/ReduxProvider';
+import FavoritesProvider from '../components/favorites-provider';
 
 export const metadata: Metadata = {
   title: "StyleMe",
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body>
         <SessionProvider>
           <ReduxProvider>
+            <FavoritesProvider />
             <MainNavigation />
             {children}
           </ReduxProvider>

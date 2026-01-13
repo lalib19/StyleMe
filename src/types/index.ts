@@ -8,3 +8,17 @@ export type User = {
     email: string;
     password: string;
 };
+
+// Extend NextAuth types
+declare module "next-auth" {
+    interface Session {
+        user: {
+            email: string;
+            favorites?: number[];
+        }
+    }
+
+    interface JWT {
+        favorites?: number[];
+    }
+}

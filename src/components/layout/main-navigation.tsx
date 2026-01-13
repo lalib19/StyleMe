@@ -9,7 +9,6 @@ import NavLink from "../ui/NavLink"
 export default function MainNavigation() {
     const items = useAppSelector((state) => state.cart.items);
     const { data: session } = useSession();
-    // console.log("session:", session, "status:", status);
 
     function handleSignOut() {
         signOut({ callbackUrl: "/" });
@@ -29,7 +28,7 @@ export default function MainNavigation() {
                             <li><button className="text-lg hover:underline hover:cursor-pointer" onClick={handleSignOut} >Logout</button></li>
                         </>
                     ) : (
-                        <li><NavLink href="/auth">Sign Up</NavLink></li>
+                        <li><NavLink href="/auth">Log In</NavLink></li>
                     )}
                     <li className="relative"><Link href="/favorites">
                         <img src="/icons/icons8-heart-48-filled.png" alt="heart" height={24} width={24} />

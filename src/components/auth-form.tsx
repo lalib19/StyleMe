@@ -36,7 +36,7 @@ async function storeFavoriteItemsInDb(userEmail: string, favoriteItems: number[]
 
 export default function AuthForm() {
     const [isLoading, setIsLoading] = useState(false)
-    const [hasAccount, setHasAccount] = useState(false)
+    const [hasAccount, setHasAccount] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const emailInput = useRef<HTMLInputElement | null>(null)
     const passwordInput = useRef<HTMLInputElement | null>(null)
@@ -58,7 +58,6 @@ export default function AuthForm() {
         }
 
         if (hasAccount) {
-            // Store favorites BEFORE signing in to prevent navigation cancellation
             if (favoriteItems && favoriteItems.length > 0) {
                 try {
                     await storeFavoriteItemsInDb(enteredEmail, favoriteItems);
