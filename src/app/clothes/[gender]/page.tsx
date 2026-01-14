@@ -2,15 +2,18 @@ import { getClothingItems } from "@/src/lib/clothing-fetch";
 import ClothingItem from "@/src/components/clothes/clothing-item";
 
 export default async function ClothesPage() {
-    const items = await getClothingItems();
+    const { items, categoryName } = await getClothingItems();
 
     return (
-        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-4 max-w-[1400px] p-5 mx-auto">
-            {items && items.length > 0 ? (
-                <ClothingItem items={items} />
-            ) : (
-                <p>No items found.</p>
-            )}
-        </ul>
+        <>
+            <p className="text-5xl font-bold m-4">{categoryName}</p>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-4 max-w-[1400px] p-5 mx-auto">
+                {items && items.length > 0 ? (
+                    <ClothingItem items={items} />
+                ) : (
+                    <p>No items found.</p>
+                )}
+            </ul>
+        </>
     )
 }
