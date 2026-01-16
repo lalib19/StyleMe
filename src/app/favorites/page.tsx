@@ -6,14 +6,14 @@ import Link from "next/link";
 
 export default async function FavoritesPage() {
     const session = await getServerSession(authOptions);
-    const allClothingItems = await getClothingItems();
+    const { items } = await getClothingItems();
 
     return (
         <div className="flex flex-col items-center mt-8">
             {!session ? (
                 <p><Link href="/auth" className="underline">Sign In</Link> to register your favorites!</p>
             ) : null}
-            <FavoriteItems allClothingItems={allClothingItems} />
+            <FavoriteItems allClothingItems={items} />
         </div>
     )
 }

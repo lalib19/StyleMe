@@ -23,7 +23,7 @@ export default function ClothingItem({ items }: { items: any[] }) {
                 >
                     <Link
                         href={{
-                            pathname: `/clothes/item/${formattedName}`,
+                            pathname: `/item/${formattedName}`,
                             query: {
                                 name: item.name,
                                 price: item.price.current.text,

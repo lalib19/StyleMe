@@ -38,7 +38,7 @@ export default async function ClothingItemDetail({
                         </button>
 
                         <div className="space-y-2 text-gray-600">
-                            <p>Details ...</p>
+                            {/* <p>Details ...</p> */}
                         </div>
                     </div>
                 </div>

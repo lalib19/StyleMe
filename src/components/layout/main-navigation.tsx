@@ -15,14 +15,14 @@ export default function MainNavigation() {
     }
 
     return (
-        <header className="flex h-16 items-center justify-between px-8 bg-custom-bg-nav shadow-md">
+        <header className="flex h-16 items-center justify-between px-50 bg-custom-bg-nav shadow-md">
             <Link href={"/"}>
                 <Logo />
             </Link>
             <nav>
                 <ul className="flex space-x-4">
-                    <li><NavLink href="/clothes/men">Men</NavLink></li>
-                    <li><NavLink href="/clothes/women">Women</NavLink></li>
+                    <li><NavLink href="/men">Men</NavLink></li>
+                    <li><NavLink href="/women">Women</NavLink></li>
                     {session ? (
                         <>
                             <li><button className="text-lg hover:underline hover:cursor-pointer" onClick={handleSignOut} >Logout</button></li>

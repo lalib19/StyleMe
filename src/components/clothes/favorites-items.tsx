@@ -11,7 +11,7 @@ interface FavoriteItemsProps {
 export default function FavoriteItems({ allClothingItems }: FavoriteItemsProps) {
     const favoriteIds = useAppSelector((state) => state.cart.items);
     const favoriteItems = useMemo(() => {
-        return allClothingItems.filter((item: any) => favoriteIds.includes(item.id));
+        return allClothingItems ? allClothingItems.filter((item: any) => favoriteIds.includes(item.id)) : [];
     }, [allClothingItems, favoriteIds]);
 
     if (favoriteItems.length === 0) {

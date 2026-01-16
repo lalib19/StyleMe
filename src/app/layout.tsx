@@ -4,6 +4,7 @@ import SessionProvider from "../lib/SessionProvider";
 import MainNavigation from '../components/layout/main-navigation';
 import ReduxProvider from '../lib/ReduxProvider';
 import FavoritesProvider from '../components/favorites-provider';
+import FilterNavigation from '../components/layout/filter-navigation';
 
 export const metadata: Metadata = {
   title: "StyleMe",
@@ -23,6 +24,7 @@ export default function RootLayout({
           <ReduxProvider>
             <FavoritesProvider />
             <MainNavigation />
+            <FilterNavigation />
             {children}
           </ReduxProvider>
         </SessionProvider>

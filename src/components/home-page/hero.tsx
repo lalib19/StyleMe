@@ -18,7 +18,7 @@ export default function Hero() {
             {/* <ImageGeneration model={modelUrl} garment={garmentUrl} />
             <ApiFunctions /> */}
             <div className="flex gap-8 items-center justify-center mt-10">
-                <Link href="/clothes/men" className="group" >
+                <Link href="/men" className="group" >
                     <Image
                         src="/images/mannequin-homme.jpg"
                         alt="Men"
@@ -30,7 +30,7 @@ export default function Hero() {
                     />
                 </Link>
 
-                <Link href="/clothes/women" className="group" >
+                <Link href="/women" className="group" >
                     <Image
                         src="/images/mannequin-femme.jpg"
                         alt="Women"
