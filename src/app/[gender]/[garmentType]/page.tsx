@@ -1,9 +1,16 @@
 import { getClothingItems } from "@/src/lib/clothing-fetch";
 import ClothingItem from "@/src/components/clothes/clothing-item";
 
+interface PageProps {
+    params: Promise<{
+        garmentType: string;
+    }>;
+}
 
-export default async function ClothesPage() {
-    const { items, categoryName } = await getClothingItems("4208");
+
+export default async function GarmentPage({ params }: PageProps) {
+    const garment = await params
+    const { items, categoryName } = await getClothingItems(garment.garmentType);
 
     return (
         <>

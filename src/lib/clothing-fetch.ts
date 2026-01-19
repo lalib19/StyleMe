@@ -1,11 +1,16 @@
 import { unstable_cache } from 'next/cache';
 
-
 // unstable cache so it doesn't refetch on save during development
 export const getClothingItems = unstable_cache(
-    async () => {
-
-        const url = 'https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=4208&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US';
+    async (garmentType) => {
+        switch (garmentType) {
+            case "jeans": garmentType = "4208"; break;
+            case "shoes": garmentType = "4209"; break;
+            case "accessories": garmentType = "4210"; break;
+            case "underwear": garmentType = "4213"; break;
+            default: garmentType = garmentType;
+        }
+        const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${garmentType}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
         const options = {
             method: 'GET',
             headers: {
@@ -17,7 +22,7 @@ export const getClothingItems = unstable_cache(
         try {
             const response = await fetch(url, options);
             const result = await response.json();
-            console.log(result.products)
+            console.log(garmentType, result.products)
             return { items: result.products, categoryName: result.categoryName };
         } catch (error) {
             console.error(error);

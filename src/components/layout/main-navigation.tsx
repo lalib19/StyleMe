@@ -2,12 +2,14 @@
 
 import Link from "next/link"
 import Logo from "./logo"
-import { useAppSelector } from "@/src/store/hooks"
+import { useAppDispatch, useAppSelector } from "@/src/store/hooks"
 import { useSession, signOut } from "next-auth/react"
 import NavLink from "../ui/NavLink"
+import { selectGender } from "@/src/store/filter-slice";
 
 export default function MainNavigation() {
     const items = useAppSelector((state) => state.cart.items);
+    const dispatch = useAppDispatch()
     const { data: session } = useSession();
 
     function handleSignOut() {
@@ -21,8 +23,8 @@ export default function MainNavigation() {
             </Link>
             <nav>
                 <ul className="flex space-x-4">
-                    <li><NavLink href="/men">Men</NavLink></li>
-                    <li><NavLink href="/women">Women</NavLink></li>
+                    <li><NavLink onClick={() => dispatch(selectGender("men"))} href="/men">Men</NavLink></li>
+                    <li><NavLink onClick={() => dispatch(selectGender("women"))} href="/women">Women</NavLink></li>
                     {session ? (
                         <>
                             <li><button className="text-lg hover:underline hover:cursor-pointer" onClick={handleSignOut} >Logout</button></li>

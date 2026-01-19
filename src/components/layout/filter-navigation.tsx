@@ -24,3 +24,6 @@ export default function FilterNavigation() {
         </header>
     )
 }
+
+
+// routing a ajuster selon le path et enlever filter slice pour params ?
