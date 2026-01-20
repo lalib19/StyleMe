@@ -10,7 +10,7 @@ interface NavLinkProps extends ComponentProps<typeof Link> {
 export default function NavLink({ children, href, ...props }: NavLinkProps) {
     const params = useParams();
     let classes = "";
-    params.gender == children?.toString().toLowerCase() ? classes = "text-lg font-bold underline" : classes = "text-lg hover:underline";
+    params.gender === children?.toString().toLowerCase() ? classes = "text-lg font-bold underline" : classes = "text-lg hover:underline";
 
     return (
         <Link href={href} className={classes} {...props}>

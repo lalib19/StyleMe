@@ -1,16 +1,24 @@
 import { getClothingItems } from "@/src/lib/clothing-fetch";
 import ClothingItem from "@/src/components/clothes/clothing-item";
+import { notFound } from "next/navigation";
 
 interface PageProps {
     params: Promise<{
+        gender: string;
         garmentType: string;
     }>;
 }
 
 
 export default async function GarmentPage({ params }: PageProps) {
-    const garment = await params
-    const { items, categoryName } = await getClothingItems(garment.garmentType);
+    const { gender, garmentType } = await params;
+
+    const validGenders = ['women', 'men'];
+    if (!validGenders.includes(gender.toLowerCase())) {
+        notFound();
+    }
+
+    const { items, categoryName } = await getClothingItems(garmentType);
 
     return (
         <>

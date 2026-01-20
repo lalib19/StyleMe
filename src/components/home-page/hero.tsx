@@ -18,8 +18,8 @@ export default function Hero() {
             <p className="mt-4">Begin browsing clothing items and favorite them to add to your cart</p>
             <p className="mt-4">Then from your favorites select which ones you would like to try on you !</p>
 
-            {/* <ImageGeneration model={modelUrl} garment={garmentUrl} />
-            <ApiFunctions /> */}
+            {/* <ImageGeneration model={modelUrl} garment={garmentUrl} /> */}
+            {/* <ApiFunctions /> */}
             <div className="flex gap-8 items-center justify-center mt-10">
                 <Link href="/men" className="group" onClick={() => dispatch(selectGender("men"))} >
                     <Image
