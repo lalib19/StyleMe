@@ -31,7 +31,7 @@ export function useFavoriteActions() {
                     console.error("Failed to save favorites to database:", response.status);
                 }
             } catch (error) {
-                console.error("Failed to save favorites to database:", error);
+                console.error("Failed to save favorites to database, not logged in:", error);
             }
         }
     };

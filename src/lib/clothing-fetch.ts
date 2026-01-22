@@ -2,32 +2,43 @@ import { unstable_cache } from 'next/cache';
 
 // unstable cache so it doesn't refetch on save during development
 export const getClothingItems = unstable_cache(
-    async (garmentType) => {
-        switch (garmentType) {
-            case "jeans": garmentType = "4208"; break;
-            case "shoes": garmentType = "4209"; break;
-            case "accessories": garmentType = "4210"; break;
-            case "underwear": garmentType = "4213"; break;
-            default: garmentType = garmentType;
-        }
-        const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${garmentType}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
-        const options = {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-key': process.env.RAPIDAPI_KEY as string,
-                'x-rapidapi-host': process.env.RAPIDAPI_HOST as string
-            }
+    async (garmentTypes: string[]) => {
+        const getCategoryId = (type: string): string => {
+            const categoryMap: Record<string, string> = {
+                "jeans": "4208",
+                "shoes": "4209",
+                "accessories": "4210",
+                // "features": "4213"
+            };
+            return categoryMap[type] || type;
         };
 
-        try {
-            const response = await fetch(url, options);
-            const result = await response.json();
-            console.log(garmentType, result.products)
-            return { items: result.products, categoryName: result.categoryName };
-        } catch (error) {
-            console.error(error);
-            return { items: [], categoryName: null };
+        const itemCategories = [];
+
+        for (const garmentType of garmentTypes) {
+            const categoryId = getCategoryId(garmentType);
+
+            const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${categoryId}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
+            const options = {
+                method: 'GET',
+                headers: {
+                    'x-rapidapi-key': process.env.RAPIDAPI_KEY as string,
+                    'x-rapidapi-host': process.env.RAPIDAPI_HOST as string
+                }
+            };
+
+            try {
+                const response = await fetch(url, options);
+                const result = await response.json();
+                console.log(result);
+                itemCategories.push({ items: result.products, categoryName: result.categoryName });
+            } catch (error) {
+                console.error(error);
+                itemCategories.push({ items: [], categoryName: null });
+            }
         }
+
+        return { itemCategories };
     },
     ['clothing-items-v2'],
     {

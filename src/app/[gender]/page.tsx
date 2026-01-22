@@ -16,18 +16,25 @@ export default async function ClothesPage({ params }: PageProps) {
         notFound();
     }
 
-    const { items, categoryName } = await getClothingItems("4208");
+    const { itemCategories } = await getClothingItems(["4208"]);
 
     return (
-        <>
-            <p className="text-5xl font-bold m-4 ml-50">{categoryName}</p>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-4 max-w-[1400px] p-5 mx-auto">
-                {items && items.length > 0 ? (
-                    <ClothingItem items={items} />
-                ) : (
-                    <p>No items found.</p>
-                )}
-            </ul>
-        </>
-    )
+        <div>
+            {itemCategories.map((category) => {
+                return (
+                    <div key={category.categoryName}>
+                        <p className="text-5xl font-bold m-4 ml-50">{category.categoryName}</p>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-4 max-w-[1400px] p-5 mx-auto">
+                            {category.items && category.items.length > 0 ? (
+                                <ClothingItem items={category.items} />
+                            ) : (
+                                <p>No items found.</p>
+                            )}
+                        </ul>
+                    </div>
+                )
+            })}
+        </div>
+    );
+
 }

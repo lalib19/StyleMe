@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useAppSelector } from "@/src/store/hooks";
 import { useFavoriteActions } from "@/src/hooks/useFavoriteActions";
+import useBrowserLanguage from "@/src/hooks/useBrowserLanguage";
 
 export default function ClothingItem({ items }: { items: any[] }) {
+    const browserLanguage = useBrowserLanguage()
     const cart = useAppSelector((state) => state.cart.items);
     const { toggleFavorite } = useFavoriteActions();
 
@@ -21,7 +23,7 @@ export default function ClothingItem({ items }: { items: any[] }) {
             return (
                 <li key={item.id} className="shadow-lg h-auto max-w-80"
                 >
-                    <Link
+                    {/* <Link
                         href={{
                             pathname: `/item/${formattedName}`,
                             query: {
@@ -31,8 +33,8 @@ export default function ClothingItem({ items }: { items: any[] }) {
                             }
                         }}
                         className="block"
-                    >
-                        {/* Image container with relative positioning for the heart */}
+                    > */}
+                    <a href={`https://asos.com/${browserLanguage}/${item.url} `} target="_blank" rel="noopener noreferrer" >
                         <div className="relative">
                             <img
                                 src={imageUrlPath}
@@ -54,7 +56,8 @@ export default function ClothingItem({ items }: { items: any[] }) {
                             <p className="w-2/3" >{item.name}</p>
                             <p className="w-1/3 text-right">{item.price.current.text}</p>
                         </div>
-                    </Link>
+                    </a>
+                    {/* </Link> */}
                 </li>
             )
         })
