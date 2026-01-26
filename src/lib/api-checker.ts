@@ -22,7 +22,7 @@ export async function testRateLimit() {
     }
 }
 
-export async function checkAllCategoryProducts(startId: number = 4208, endId: number = 4300) {
+export async function checkAllCategoryProducts(startId: number = 0, endId: number = 1000) {
     const results: { categoryId: number; hasProducts: boolean; productCount: number; productName: string; error?: string }[] = [];
     const startTime = performance.now();
 
@@ -32,7 +32,7 @@ export async function checkAllCategoryProducts(startId: number = 4208, endId: nu
     console.log('RAPIDAPI_KEY:', process.env.RAPIDAPI_KEY ? 'Present' : 'MISSING');
     console.log('RAPIDAPI_HOST:', process.env.RAPIDAPI_HOST ? 'Present' : 'MISSING');
 
-    for (let i = startId; i < endId; i++) {
+    for (let i = startId; i < endId; i += 50) {
         const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${i}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
         const options = {
             method: 'GET',
