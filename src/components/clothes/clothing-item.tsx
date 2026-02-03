@@ -1,11 +1,11 @@
 "use client"
 
-import Link from "next/link";
 import { useAppSelector } from "@/src/store/hooks";
 import { useFavoriteActions } from "@/src/hooks/useFavoriteActions";
 import useBrowserLanguage from "@/src/hooks/useBrowserLanguage";
+import AddToModel from "../ui/AddToModel";
 
-export default function ClothingItem({ items }: { items: any[] }) {
+export default function ClothingItem({ items, category }: { items: any[], category: string }) {
     const browserLanguage = useBrowserLanguage()
     const cart = useAppSelector((state) => state.cart.items);
     const { toggleFavorite } = useFavoriteActions();
@@ -21,19 +21,7 @@ export default function ClothingItem({ items }: { items: any[] }) {
             const iconPath = `${cart.includes(item.id) ? "/icons/icons8-heart-48-filled.png" : "/icons/icons8-heart-48.png"}`
 
             return (
-                <li key={item.id} className="shadow-lg h-auto max-w-80"
-                >
-                    {/* <Link
-                        href={{
-                            pathname: `/item/${formattedName}`,
-                            query: {
-                                name: item.name,
-                                price: item.price.current.text,
-                                imageUrl: item.imageUrl
-                            }
-                        }}
-                        className="block"
-                    > */}
+                <li key={item.id} className="shadow-lg h-auto max-w-80">
                     <a href={`https://asos.com/${browserLanguage}/${item.url} `} target="_blank" rel="noopener noreferrer" >
                         <div className="relative">
                             <img
@@ -42,6 +30,7 @@ export default function ClothingItem({ items }: { items: any[] }) {
                                 loading="lazy"
                                 className="w-full h-auto object-cover"
                             />
+                            <AddToModel item={item} category={category} />
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();

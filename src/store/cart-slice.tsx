@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { clear } from "console";
 
 interface CartState {
   items: number[];
@@ -23,8 +24,11 @@ const cartSlice = createSlice({
     loadFavorites(state, action: PayloadAction<number[]>) {
       state.items = action.payload;
     },
+    clearCart(state) {
+      state.items = [];
+    }
   },
 });
 
-export const { selectItem, loadFavorites } = cartSlice.actions;
+export const { selectItem, loadFavorites, clearCart } = cartSlice.actions;
 export default cartSlice;

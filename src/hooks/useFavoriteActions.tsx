@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useAppDispatch } from "../store/hooks";
-import { selectItem } from "../store/cart-slice";
+import { clearCart, selectItem } from "../store/cart-slice";
 
 export function useFavoriteActions() {
     const { data: session } = useSession();
@@ -35,5 +35,26 @@ export function useFavoriteActions() {
             }
         }
     };
-    return { toggleFavorite };
+
+    const clearFavorites = async () => {
+        if (session?.user?.email) {
+            try {
+                const response = await fetch("api/favorites", {
+                    method: "PUT",
+                    body: JSON.stringify({
+                        userEmail: session.user.email,
+                        favoriteItems: []
+                    }),
+                    headers: { "Content-Type": "application/json" }
+                })
+                if (response.ok) {
+                    dispatch(clearCart())
+                    console.log("Cleared favorites from database");
+                }
+            } catch (error) {
+                console.error("Failed to clear favorites from database:", error);
+            }
+        }
+    }
+    return { toggleFavorite, clearFavorites };
 }

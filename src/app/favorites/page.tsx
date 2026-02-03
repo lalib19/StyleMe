@@ -19,6 +19,7 @@ export default async function FavoritesPage() {
     }
 
 
+    // console.log("here items categories :", itemCategories);
     return (
         <div className="flex flex-col items-center mt-8 w-3/4">
             {!session ? (
