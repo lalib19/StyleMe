@@ -4,14 +4,17 @@ import { useAppSelector } from "@/src/store/hooks";
 import { useFavoriteActions } from "@/src/hooks/useFavoriteActions";
 import useBrowserLanguage from "@/src/hooks/useBrowserLanguage";
 import AddToModel from "../ui/AddToModel";
+import { useParams } from "next/navigation";
 
-export default function ClothingItem({ items, category }: { items: any[], category: string }) {
+export default function ClothingItem({ items, category, showAddToModel = false }: { items: any[], category: string, showAddToModel?: boolean }) {
     const browserLanguage = useBrowserLanguage()
     const cart = useAppSelector((state) => state.cart.items);
+    const params = useParams();
     const { toggleFavorite } = useFavoriteActions();
 
     const handleSelectItem = (id: number) => {
         toggleFavorite(id, cart);
+        console.log('Params:', params)
     }
 
     return (
@@ -30,7 +33,7 @@ export default function ClothingItem({ items, category }: { items: any[], catego
                                 loading="lazy"
                                 className="w-full h-auto object-cover"
                             />
-                            <AddToModel item={item} category={category} />
+                           {showAddToModel && <AddToModel item={item} category={category} />}
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();

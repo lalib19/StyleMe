@@ -14,10 +14,14 @@ export default function FilterNavigation() {
             {gender && params.gender && (
                 <header className="flex h-10 items-center px-50 bg-custom-bg-nav shadow-md border-t-black border-solid border-t space-x-4">
                     <>
+                        <NavLink href={`/${gender}/hat`}>Hat</NavLink>
+                        <NavLink href={`/${gender}/top`}>Top</NavLink>
+                        {gender === 'women' && (
+                            <NavLink href={`/${gender}/dress`}>Dress</NavLink>
+                        )}
                         <NavLink href={`/${gender}/jeans`}>Jeans</NavLink>
                         <NavLink href={`/${gender}/shoes`}>Shoes</NavLink>
                         <NavLink href={`/${gender}/accessories`}>Accessories</NavLink>
-                        {/* <NavLink href={`/${gender}/features`}>Features</NavLink> */}
                     </>
                 </header>
             )}

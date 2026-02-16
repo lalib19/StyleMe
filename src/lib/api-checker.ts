@@ -32,7 +32,7 @@ export async function checkAllCategoryProducts(startId: number = 0, endId: numbe
     console.log('RAPIDAPI_KEY:', process.env.RAPIDAPI_KEY ? 'Present' : 'MISSING');
     console.log('RAPIDAPI_HOST:', process.env.RAPIDAPI_HOST ? 'Present' : 'MISSING');
 
-    for (let i = startId; i < endId; i += 50) {
+    for (let i = startId; i <= endId; i++) {
         const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${i}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
         const options = {
             method: 'GET',

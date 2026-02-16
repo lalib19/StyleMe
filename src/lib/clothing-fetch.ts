@@ -1,22 +1,14 @@
 import { unstable_cache } from 'next/cache';
+import { getCategoryId } from './asos-categories';
 
 // unstable cache so it doesn't refetch on save during development
 export const getClothingItems = unstable_cache(
-    async (garmentTypes: string[]) => {
-        const getCategoryId = (type: string): string => {
-            const categoryMap: Record<string, string> = {
-                "jeans": "4208",
-                "shoes": "4209",
-                "accessories": "4210",
-                // "features": "4213"
-            };
-            return categoryMap[type] || type;
-        };
+    async (garmentTypes: string[], gender: 'women' | 'men' | 'all' = 'all') => {
 
         const itemCategories = [];
 
         for (const garmentType of garmentTypes) {
-            const categoryId = getCategoryId(garmentType);
+            const categoryId = getCategoryId(garmentType, gender);
 
             const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${categoryId}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
             const options = {
@@ -30,7 +22,7 @@ export const getClothingItems = unstable_cache(
             try {
                 const response = await fetch(url, options);
                 const result = await response.json();
-                console.log(result);
+                // console.log(result);
                 itemCategories.push({ items: result.products, categoryName: result.categoryName });
             } catch (error) {
                 console.error(error);
@@ -40,7 +32,7 @@ export const getClothingItems = unstable_cache(
 
         return { itemCategories };
     },
-    ['clothing-items-v2'],
+    ['clothing-items-v3'], // Updated cache key for new categories
     {
         revalidate: 3600,
         tags: ['clothing-items']
@@ -48,7 +40,10 @@ export const getClothingItems = unstable_cache(
 );
 
 export const checkApiEndpoint = async () => {
-    const url = "https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=100&lang=en-US&categoryId=4208&categoryId=4209&categoryId=4210&categoryId=4213"
+    // const url = "https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=100&lang=en-US&categoryId=4208&categoryId=4209&categoryId=4210&categoryId=4213"
+    // const url = 'https://asos2.p.rapidapi.com/categories/list?country=US&lang=en-US';
+    const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=9172&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
+
     const options = {
         method: 'GET',
         headers: {

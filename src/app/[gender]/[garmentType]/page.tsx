@@ -18,7 +18,7 @@ export default async function GarmentPage({ params }: PageProps) {
         notFound();
     }
 
-    const { itemCategories } = await getClothingItems([garmentType]);
+    const { itemCategories } = await getClothingItems([garmentType], gender as 'women' | 'men');
 
     return (
         <>
@@ -28,7 +28,7 @@ export default async function GarmentPage({ params }: PageProps) {
                         <p className="text-5xl font-bold m-4 ml-50">{category.categoryName}</p>
                         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-4 max-w-[1400px] p-5 mx-auto">
                             {category.items && category.items.length > 0 ? (
-                                <ClothingItem items={category.items} />
+                                <ClothingItem items={category.items} category={category.categoryName} />
                             ) : (
                                 <p>No items found.</p>
                             )}
