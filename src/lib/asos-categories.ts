@@ -11,6 +11,7 @@ export interface CategoryMapping {
 }
 
 export const asosCategories = {
+
     women: {
         hat: {
             id: "27109", // Accessories (includes hats)
@@ -37,7 +38,6 @@ export const asosCategories = {
             name: "Accessories"
         }
     },
-
     men: {
         hat: {
             id: "27112", // Accessories (includes hats)

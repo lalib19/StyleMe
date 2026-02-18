@@ -1,14 +1,15 @@
 'use server';
 
+const options = {
+    method: 'GET',
+    headers: {
+        'x-rapidapi-key': process.env.RAPIDAPI_KEY as string,
+        'x-rapidapi-host': process.env.RAPIDAPI_HOST as string
+    }
+};
+
 export async function testRateLimit() {
     const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=4001&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
-    const options = {
-        method: 'GET',
-        headers: {
-            'x-rapidapi-key': process.env.RAPIDAPI_KEY as string,
-            'x-rapidapi-host': process.env.RAPIDAPI_HOST as string
-        }
-    };
 
     try {
         const response = await fetch(url, options);
@@ -19,6 +20,18 @@ export async function testRateLimit() {
     } catch (error) {
         console.log("Error:", error);
         return `Error: ${error}`;
+    }
+}
+
+export const checkApiEndpoint = async () => {
+    const url = 'https://asos2.p.rapidapi.com/products/v4/detail?id=209819845&id=209635154&lang=en-US&store=US&sizeSchema=US&currency=USD';
+
+    try {
+        const response = await fetch(url, options);
+        const result = await response.json();
+        console.log(result);
+    } catch (error) {
+        console.error(error);
     }
 }
 
@@ -34,14 +47,6 @@ export async function checkAllCategoryProducts(startId: number = 0, endId: numbe
 
     for (let i = startId; i <= endId; i++) {
         const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${i}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
-        const options = {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-key': process.env.RAPIDAPI_KEY as string,
-                'x-rapidapi-host': process.env.RAPIDAPI_HOST as string
-            }
-        };
-
         const requestStart = performance.now();
 
         try {
