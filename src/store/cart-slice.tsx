@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { clear } from "console";
 
 interface CartState {
   items: number[];

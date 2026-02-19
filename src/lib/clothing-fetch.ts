@@ -16,18 +16,23 @@ export const getClothingItems = unstable_cache(
         const itemCategories = [];
 
         for (const garmentType of garmentTypes) {
-            const categoryId = getCategoryId(garmentType, gender);
+            const categoryIds = getCategoryId(garmentType, gender);
 
-            const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${categoryId}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
+            // Handle both single ID and array of IDs
+            const idsToProcess = Array.isArray(categoryIds) ? categoryIds : [categoryIds]
 
-            try {
-                const response = await fetch(url, options);
-                const result = await response.json();
-                // console.log(result);
-                itemCategories.push({ items: result.products, categoryName: result.categoryName });
-            } catch (error) {
-                console.error(error);
-                itemCategories.push({ items: [], categoryName: null });
+            for (const categoryId of idsToProcess) {
+                const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${categoryId}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
+
+                try {
+                    const response = await fetch(url, options);
+                    const result = await response.json();
+                    // console.log(result);
+                    itemCategories.push({ items: result.products, categoryName: result.categoryName });
+                } catch (error) {
+                    console.error(error);
+                    itemCategories.push({ items: [], categoryName: null });
+                }
             }
         }
 

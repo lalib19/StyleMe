@@ -7,7 +7,7 @@ import GarmentSelector from "@/src/components/layout/garment-selector";
 
 export default async function FavoritesPage() {
     const session = await getServerSession(authOptions);
-    const { itemCategories } = await getClothingItems(["jeans", "shoes", "accessories", "top"], "all"); // Default to all for favorites
+    const { itemCategories } = await getClothingItems(["jeans", "shoes", "accessories", "top", "hat", "dress"], "all");
 
     if (itemCategories.length === 0) {
         return (

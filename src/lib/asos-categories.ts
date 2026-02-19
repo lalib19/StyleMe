@@ -62,9 +62,6 @@ export const asosCategories = {
     }
 } as const;
 
-/**
- * Alternative categories for more specific targeting
- */
 export const specialtyCategories = {
     women: {
         dresses: {
@@ -103,27 +100,26 @@ export const specialtyCategories = {
     }
 };
 
-export function getCategoryId(garmentType: string, gender: 'women' | 'men' | 'all'): string {
-    const categories = gender === 'all' ? { ...asosCategories.women, ...asosCategories.men } : asosCategories[gender];
+export function getCategoryId(garmentType: string, gender: 'women' | 'men' | 'all'): string | undefined | string[] {
+    console.log("Getting category for:", garmentType, gender);
 
-    if (categories && categories[garmentType as keyof typeof categories]) {
-        return categories[garmentType as keyof typeof categories].id;
+    if (gender === 'all') {
+        // Return both men's and women's category IDs
+        const menId = asosCategories.men[garmentType as keyof typeof asosCategories.men]?.id;
+        const womenId = asosCategories.women[garmentType as keyof typeof asosCategories.women]?.id;
+
+        const ids = [];
+        if (menId) ids.push(menId);
+        if (womenId) ids.push(womenId);
+
+        return ids.length > 0 ? ids : undefined;
     }
 
-    // Fallback to legacy categories if not found
-    const legacyMap: Record<string, string> = {
-        "jeans": "4208",
-        "shoes": "4209",
-        "accessories": "4210",
-        "top": "1000"
-    };
-
-    return legacyMap[garmentType] || "1000"; // Default fallback
+    // Handle specific gender
+    const categories = asosCategories[gender as keyof typeof asosCategories];
+    return categories?.[garmentType as keyof typeof categories]?.id;
 }
 
-/**
- * Get display name for a category
- */
 export function getCategoryName(garmentType: string, gender: 'women' | 'men' | 'all'): string {
     const categories = gender === 'all' ? { ...asosCategories.women, ...asosCategories.men } : asosCategories[gender];
 
@@ -134,9 +130,6 @@ export function getCategoryName(garmentType: string, gender: 'women' | 'men' | '
     return garmentType.charAt(0).toUpperCase() + garmentType.slice(1);
 }
 
-/**
- * Get all available garment types for a gender
- */
 export function getAvailableGarmentTypes(gender: 'women' | 'men'): string[] {
     return Object.keys(asosCategories[gender]);
 }
