@@ -2,19 +2,19 @@
 
 import { useSession } from "next-auth/react";
 import { useAppDispatch } from "../store/hooks";
-import { clearCart, selectItem } from "../store/cart-slice";
+import { CartState, clearCart, selectItem } from "../store/cart-slice";
 
 export function useFavoriteActions() {
     const { data: session } = useSession();
     const dispatch = useAppDispatch();
 
-    const toggleFavorite = async (itemId: number, currentFavorites: number[]) => {
-        dispatch(selectItem(itemId));
+    const toggleFavorite = async (item: { id: number; category: string; categoryId: number }, currentFavorites: CartState) => {
+        dispatch(selectItem(item));
 
-        const isCurrentlyFavorite = currentFavorites.includes(itemId);
+        const isCurrentlyFavorite = currentFavorites.items.some(i => i.id === item.id);
         const newFavorites = isCurrentlyFavorite
-            ? currentFavorites.filter(id => id !== itemId)
-            : [...currentFavorites, itemId];
+            ? currentFavorites.items.filter(i => i.id !== item.id)
+            : [...currentFavorites.items, item];
 
         if (session?.user?.email) {
             try {

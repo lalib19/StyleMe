@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface CartState {
+export interface CartState {
   items: {
     id: number;
     category: string;
-    categoryId: number;
+    categoryId?: number;
   }[]
 }
 
@@ -16,7 +16,7 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    selectItem(state, action: PayloadAction<{ id: number; category: string; categoryId: number }>) {
+    selectItem(state, action: PayloadAction<{ id: number; category: string; categoryId?: number }>) {
       const existingItem = state.items.find((item) => item.id === action.payload.id);
       if (existingItem) {
         state.items = state.items.filter((item) => item.id !== action.payload.id);
@@ -24,7 +24,7 @@ const cartSlice = createSlice({
         state.items.push(action.payload);
       }
     },
-    loadFavorites(state, action: PayloadAction<{ id: number; category: string; categoryId: number }[]>) {
+    loadFavorites(state, action: PayloadAction<CartState["items"]>) {
       state.items = action.payload;
     },
     clearCart(state) {

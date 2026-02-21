@@ -8,12 +8,12 @@ import { useParams } from "next/navigation";
 
 export default function ClothingItem({ items, category, showAddToModel = false }: { items: any[], category: string, showAddToModel?: boolean }) {
     const browserLanguage = useBrowserLanguage()
-    const cart = useAppSelector((state) => state.cart.items);
+    const cart = useAppSelector((state) => state.cart);
     const params = useParams();
     const { toggleFavorite } = useFavoriteActions();
 
-    const handleSelectItem = (id: number) => {
-        toggleFavorite(id, cart);
+    const handleSelectItem = (item: { id: number; category: string; categoryId: number }) => {
+        toggleFavorite(item, cart);
         console.log('Params:', params)
     }
 
@@ -21,7 +21,7 @@ export default function ClothingItem({ items, category, showAddToModel = false }
         items.map((item) => {
             const formattedName = item.name.replace(/\s+/g, '-').toLowerCase()
             const imageUrlPath = `https://${item.imageUrl}`
-            const iconPath = `${cart.includes(item.id) ? "/icons/icons8-heart-48-filled.png" : "/icons/icons8-heart-48.png"}`
+            const iconPath = `${cart.items.some(i => i.id === item.id) ? "/icons/icons8-heart-48-filled.png" : "/icons/icons8-heart-48.png"}`
 
             return (
                 <li key={item.id} className="shadow-lg h-auto max-w-80">
@@ -33,11 +33,11 @@ export default function ClothingItem({ items, category, showAddToModel = false }
                                 loading="lazy"
                                 className="w-full h-auto object-cover"
                             />
-                           {showAddToModel && <AddToModel item={item} category={category} />}
+                            {showAddToModel && <AddToModel item={item} category={category} />}
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    handleSelectItem(item.id);
+                                    handleSelectItem({ id: item.id, category, categoryId: item.categoryId });
                                 }}
                                 className="absolute bottom-2 right-2 p-1 bg-white/80 rounded-full hover:bg-blue/90 transition-colors"
                             >
