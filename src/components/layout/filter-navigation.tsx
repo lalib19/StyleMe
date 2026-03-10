@@ -14,7 +14,7 @@ export default function FilterNavigation() {
             {gender && params.gender && (
                 <header className="flex h-10 items-center px-50 bg-custom-bg-nav shadow-md border-t-black border-solid border-t space-x-4">
                     <>
-                        <NavLink href={`/${gender}/hat`}>Hat</NavLink>
+                        {/* <NavLink href={`/${gender}/hat`}>Hat</NavLink> */}
                         <NavLink href={`/${gender}/top`}>Top</NavLink>
                         {gender === 'women' && (
                             <NavLink href={`/${gender}/dress`}>Dress</NavLink>
@@ -28,6 +28,3 @@ export default function FilterNavigation() {
         </>
     )
 }
-
-
-// routing a ajuster selon le path et enlever filter slice pour params ?

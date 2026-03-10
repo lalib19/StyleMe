@@ -26,8 +26,17 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
     try {
-        const { userEmail, favoriteItems } = await request.json();
-        await storeFavoriteItems(userEmail, favoriteItems);
+        const session = await getServerSession(authOptions);
+
+        if (!session?.user?.email) {
+            return NextResponse.json(
+                { error: "Authentication required" },
+                { status: 401 }
+            );
+        }
+
+        const { favoriteItems } = await request.json();
+        await storeFavoriteItems(session.user.email, favoriteItems);
         return NextResponse.json({ success: true });
 
     } catch (error) {

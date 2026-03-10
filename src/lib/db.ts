@@ -1,5 +1,6 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { NextResponse } from "next/server";
+import { CartState } from "../store/cart-slice";
 
 
 export async function connectToDb(): Promise<MongoClient> {
@@ -17,7 +18,7 @@ export async function connectToDb(): Promise<MongoClient> {
     return client;
 }
 
-export async function storeFavoriteItems(userEmail: string, favoriteItems: number[]) {
+export async function storeFavoriteItems(userEmail: string, favoriteItems: CartState) {
     const client = await connectToDb();
 
     try {
@@ -36,7 +37,7 @@ export async function storeFavoriteItems(userEmail: string, favoriteItems: numbe
 
 }
 
-export async function getFavoriteItemsFromDb(userEmail: string): Promise<number[]> {
+export async function getFavoriteItemsFromDb(userEmail: string): Promise<CartState> {
     const client = await connectToDb()
     try {
         const db = client.db()
@@ -44,7 +45,7 @@ export async function getFavoriteItemsFromDb(userEmail: string): Promise<number[
         return user?.favoriteItems || []
     } catch (error) {
         console.log("Error retrieving favorite items:", error);
-        return []
+        return { items: [] };
     }
     finally {
         await client.close()

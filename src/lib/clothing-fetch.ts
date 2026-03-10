@@ -17,31 +17,47 @@ export const getClothingItems = unstable_cache(
 
         for (const garmentType of garmentTypes) {
             const categoryIds = getCategoryId(garmentType, gender);
-
-            // Handle both single ID and array of IDs
             const idsToProcess = Array.isArray(categoryIds) ? categoryIds : [categoryIds]
-
             for (const categoryId of idsToProcess) {
                 const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${categoryId}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
-
+                // const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=20580&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
                 try {
                     const response = await fetch(url, options);
                     const result = await response.json();
-                    // console.log(result);
-                    itemCategories.push({ items: result.products, categoryName: result.categoryName });
+                    const modifiedProducts = result.products.map((product: any) => ({ ...product, customCategoryName: garmentType, categoryName: result.categoryName }));
+                    itemCategories.push({ items: modifiedProducts, categoryName: result.categoryName, customCategoryName: garmentType });
                 } catch (error) {
                     console.error(error);
-                    itemCategories.push({ items: [], categoryName: null });
+                    itemCategories.push({ items: [], categoryName: null, customCategoryName: null });
                 }
             }
         }
-
         return { itemCategories };
     },
-    ['clothing-items-v3'], // Updated cache key for new categories
+    ['clothing-items-v3'],
     {
         revalidate: 3600,
         tags: ['clothing-items']
     }
 );
 
+// Would be needed to get the latest details for favorite items, but currently we save all details in the database so not necessary and they are fresh enough for our use case
+
+// export const getFavoriteClothingItemsFromAPI = unstable_cache(
+//     async (itemIds: string[]) => {
+//         const favoriteItems = [];
+//         for (const itemId of itemIds) {
+//             const url = `https://asos2.p.rapidapi.com/products/v2/detail?productId=${itemId}&store=US&country=US&currency=USD&sizeSchema=US&lang=en-US`;
+
+//             try {
+//                 const response = await fetch(url, options);
+//                 const result = await response.json();
+//                 console.log("favorite item fetch result:", result);
+//                 favoriteItems.push(result);
+//             } catch (error) {
+//                 console.error(error);
+//             }
+//         }
+//         return { favoriteItems };
+//     }
+// )

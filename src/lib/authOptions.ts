@@ -1,6 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { connectToDb, getFavoriteItemsFromDb } from '@/src/lib/db';
+import { connectToDb } from '@/src/lib/db';
 import { User, Credentials } from '@/src/types/index';
 import { verifyPassword } from "./auth";
 

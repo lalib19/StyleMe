@@ -1,3 +1,5 @@
+import { CartState } from "../store/cart-slice";
+
 export type Credentials = {
     email: string;
     password: string;
@@ -14,11 +16,11 @@ declare module "next-auth" {
     interface Session {
         user: {
             email: string;
-            favorites?: number[];
+            favorites?: CartState;
         }
     }
 
     interface JWT {
-        favorites?: number[];
+        favorites?: CartState;
     }
 }

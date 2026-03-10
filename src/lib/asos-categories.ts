@@ -18,7 +18,7 @@ export const asosCategories = {
             name: "Hats & Accessories"
         },
         top: {
-            id: "2623", // New In Clothing (good variety of tops)
+            id: "20580", // Hoodies and sweatshirts
             name: "Tops & Clothing"
         },
         dress: {
@@ -48,7 +48,7 @@ export const asosCategories = {
             name: "Tops & Clothing"
         },
         jeans: {
-            id: "20753", // Tall section (has good variety with filters)
+            id: "5230", // Straight Leg Jeans
             name: "Jeans & Pants"
         },
         shoes: {
@@ -70,9 +70,10 @@ export const specialtyCategories = {
             evening: "8857",     // Evening Dresses
             mini: "13597",       // Mini Dresses
             midi: "12899",       // Midi Dresses
-            maxi: "9979"         // Maxi Dresses
+            maxi: "9979",         // Maxi Dresses
         },
         jeans: {
+            jeansAndPants: "20753", // Tall section (has good variety with filters)
             barrel: "52368",     // Barrel Jeans
             straight: "50616",   // Straight Leg Jeans
             wide: "28017",       // Wide Leg Jeans
@@ -101,7 +102,6 @@ export const specialtyCategories = {
 };
 
 export function getCategoryId(garmentType: string, gender: 'women' | 'men' | 'all'): string | undefined | string[] {
-    console.log("Getting category for:", garmentType, gender);
 
     if (gender === 'all') {
         // Return both men's and women's category IDs

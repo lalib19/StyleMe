@@ -3,23 +3,21 @@
 import { useAppSelector } from "@/src/store/hooks";
 import { useFavoriteActions } from "@/src/hooks/useFavoriteActions";
 import useBrowserLanguage from "@/src/hooks/useBrowserLanguage";
-import AddToModel from "../ui/AddToModel";
-import { useParams } from "next/navigation";
 
-export default function ClothingItem({ items, category, showAddToModel = false }: { items: any[], category: string, showAddToModel?: boolean }) {
+export default function ClothingItem({ items }: { items: any[] }) {
     const browserLanguage = useBrowserLanguage()
     const cart = useAppSelector((state) => state.cart);
-    const params = useParams();
     const { toggleFavorite } = useFavoriteActions();
 
-    const handleSelectItem = (item: { id: number; category: string; categoryId: number }) => {
+    const handleSelectItem = (item: { id: number; name: string; imageUrl: string; url: string; price: string; categoryName: string; customCategoryName: string }) => {
+        console.log("Toggling favorite for item:", item);
         toggleFavorite(item, cart);
-        console.log('Params:', params)
     }
+    // console.log("items in ClothingItem:", items);
 
     return (
         items.map((item) => {
-            const formattedName = item.name.replace(/\s+/g, '-').toLowerCase()
+            // const formattedName = item.name.replace(/\s+/g, '-').toLowerCase()
             const imageUrlPath = `https://${item.imageUrl}`
             const iconPath = `${cart.items.some(i => i.id === item.id) ? "/icons/icons8-heart-48-filled.png" : "/icons/icons8-heart-48.png"}`
 
@@ -33,11 +31,10 @@ export default function ClothingItem({ items, category, showAddToModel = false }
                                 loading="lazy"
                                 className="w-full h-auto object-cover"
                             />
-                            {showAddToModel && <AddToModel item={item} category={category} />}
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    handleSelectItem({ id: item.id, category, categoryId: item.categoryId });
+                                    handleSelectItem({ id: item.id, name: item.name, imageUrl: item.imageUrl, url: item.url, price: item.price.current.text, categoryName: item.categoryName, customCategoryName: item.customCategoryName });
                                 }}
                                 className="absolute bottom-2 right-2 p-1 bg-white/80 rounded-full hover:bg-blue/90 transition-colors"
                             >
@@ -49,8 +46,7 @@ export default function ClothingItem({ items, category, showAddToModel = false }
                             <p className="w-1/3 text-right">{item.price.current.text}</p>
                         </div>
                     </a>
-                    {/* </Link> */}
-                </li>
+                </li >
             )
         })
     )

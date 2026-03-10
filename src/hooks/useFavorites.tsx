@@ -13,12 +13,10 @@ export function useFavorites() {
     useEffect(() => {
         async function fetchFavorites() {
             if (status === "authenticated" && session?.user?.email && !hasLoadedRef.current) {
-                // console.log("Fetching favorites for:", session.user.email);
                 try {
                     const response = await fetch("/api/favorites", {
                         method: "GET"
                     });
-                    // console.log("Fetch response status:", response.status, response.ok);
 
                     if (response.ok) {
                         const data = await response.json();

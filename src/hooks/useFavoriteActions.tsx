@@ -8,7 +8,7 @@ export function useFavoriteActions() {
     const { data: session } = useSession();
     const dispatch = useAppDispatch();
 
-    const toggleFavorite = async (item: { id: number; category: string; categoryId: number }, currentFavorites: CartState) => {
+    const toggleFavorite = async (item: { id: number; name: string; imageUrl: string; url: string, price: string; categoryName: string; customCategoryName: string }, currentFavorites: CartState) => {
         dispatch(selectItem(item));
 
         const isCurrentlyFavorite = currentFavorites.items.some(i => i.id === item.id);

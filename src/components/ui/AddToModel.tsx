@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/src/store/hooks"
 import { setBottom, setTop, setShoes, setHat, addAccessory } from "@/src/store/model-slice";
 
-export default function AddToModel({ item, category }: { item: any, category: string }) {
+export default function AddToModel({ item, categoryName, customCategoryName }: { item: any, categoryName: string, customCategoryName: string }) {
     const dispatch = useAppDispatch()
     const model = useAppSelector((state => state.model.model))
     const iconPath = item.id === model.top.id || item.id === model.bottom.id || item.id === model.shoes.id || item.id === model.hat.id || model.accessories.some((acc) => acc.id === item.id) ? "/icons/icons8-plus-50-filled.png" : "/icons/icons8-plus-50.png"
@@ -9,15 +9,15 @@ export default function AddToModel({ item, category }: { item: any, category: st
     function handleAddModel(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
 
-        const lowerCategory = category.toLowerCase();
+        const lowerCategory = customCategoryName?.toLowerCase();
 
         if (lowerCategory === "hat") {
             dispatch(setHat({ id: item.id, image: item.imageUrl }));
         } else if (lowerCategory === "top") {
             dispatch(setTop({ id: item.id, image: item.imageUrl }));
-        } else if (lowerCategory === "jeans" || lowerCategory.includes("jeans")) {
+        } else if (lowerCategory === "jeans" || lowerCategory?.includes("jeans")) {
             dispatch(setBottom({ id: item.id, image: item.imageUrl }));
-        } else if (lowerCategory.includes("shoes") || lowerCategory.includes("boots") || lowerCategory.includes("sneakers")) {
+        } else if (lowerCategory?.includes("shoes") || lowerCategory?.includes("boots") || lowerCategory?.includes("sneakers")) {
             dispatch(setShoes({ id: item.id, image: item.imageUrl }));
         } else if (lowerCategory === "accessory") {
             dispatch(addAccessory({ id: item.id, image: item.imageUrl }));

@@ -5,6 +5,7 @@ import { useRef, useState, FormEvent } from "react"
 import Button from "./ui/Button"
 import Input from "./ui/Input"
 import { useAppSelector } from "../store/hooks"
+import { syncFavoritesToServer } from "../lib/favorites-api"
 
 async function createUser(email: string, password: string) {
     const response = await fetch("/api/auth/signup", {
@@ -20,27 +21,13 @@ async function createUser(email: string, password: string) {
     return data
 }
 
-async function storeFavoriteItemsInDb(userEmail: string, favoriteItems: number[]) {
-    const response = await fetch("/api/favorites", {
-        method: "PUT",
-        body: JSON.stringify({ userEmail, favoriteItems }),
-        headers: { "Content-Type": "application/json" }
-    });
-    const data = await response.json()
-    if (!response.ok) {
-        throw new Error(data.error || "Failed to store favorite items")
-    }
-
-    return data
-}
-
 export default function AuthForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [hasAccount, setHasAccount] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const emailInput = useRef<HTMLInputElement | null>(null)
     const passwordInput = useRef<HTMLInputElement | null>(null)
-    const favoriteItems = useAppSelector((state) => state.cart.items);
+    const favoriteItems = useAppSelector((state) => state.cart);
 
 
     async function submitHandler(event: FormEvent) {
@@ -58,14 +45,6 @@ export default function AuthForm() {
         }
 
         if (hasAccount) {
-            if (favoriteItems && favoriteItems.length > 0) {
-                try {
-                    await storeFavoriteItemsInDb(enteredEmail, favoriteItems);
-                } catch (favoriteError) {
-                    console.error("Failed to store favorites:", favoriteError);
-                }
-            }
-
             const result = await signIn("credentials", {
                 email: enteredEmail,
                 password: enteredPassword
@@ -75,18 +54,31 @@ export default function AuthForm() {
                 setError(result.error ? result.error
                     : "Invalid email or password")
                 setIsLoading(false)
+            } else if (favoriteItems.items && favoriteItems.items.length > 0) {
+                try {
+                    await syncFavoritesToServer(favoriteItems);
+                } catch (favoriteError) {
+                    console.error("Failed to sync favorites:", favoriteError);
+                }
             }
         } else {
             try {
-                const result = await createUser(enteredEmail, enteredPassword);
+                await createUser(enteredEmail, enteredPassword);
 
-                if (favoriteItems && favoriteItems.length > 0) {
-                    await storeFavoriteItemsInDb(enteredEmail, favoriteItems);
-                }
-                await signIn("credentials", {
+                const result = await signIn("credentials", {
                     email: enteredEmail,
                     password: enteredPassword
-                })
+                });
+
+                if (result?.error) {
+                    setError(result.error);
+                } else if (favoriteItems.items && favoriteItems.items.length > 0) {
+                    try {
+                        await syncFavoritesToServer(favoriteItems);
+                    } catch (favoriteError) {
+                        console.error("Failed to sync favorites:", favoriteError);
+                    }
+                }
             } catch (error) {
                 setError(error instanceof Error ? error.message : "Something went wrong")
             } finally {
