@@ -15,7 +15,7 @@ export const asosCategories = {
     women: {
         hat: {
             id: "27109", // Accessories (includes hats)
-            name: "Hats & Accessories"
+            name: "Hats"
         },
         top: {
             id: "20580", // Hoodies and sweatshirts
@@ -33,15 +33,15 @@ export const asosCategories = {
             id: "6992", // New In Shoes
             name: "Shoes"
         },
-        accessories: {
+        accessory: {
             id: "27109", // New In Accessories
-            name: "Accessories"
+            name: "Accessory"
         }
     },
     men: {
         hat: {
             id: "27112", // Accessories (includes hats)
-            name: "Hats & Accessories"
+            name: "Hats"
         },
         top: {
             id: "9172",    // Graphic Tees
@@ -55,9 +55,9 @@ export const asosCategories = {
             id: "51965", // New In Shoes
             name: "Shoes"
         },
-        accessories: {
+        accessory: {
             id: "27112", // Accessories
-            name: "Accessories"
+            name: "Accessory"
         }
     }
 } as const;

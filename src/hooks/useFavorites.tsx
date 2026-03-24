@@ -1,14 +1,16 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "../store/hooks";
 import { loadFavorites } from "../store/cart-slice";
+import { setUserImage } from "../store/model-slice";
 
 export function useFavorites() {
+    const [generatedData, setGeneratedData] = useState(null);
     const { data: session, status } = useSession();
-    const dispatch = useAppDispatch();
     const hasLoadedRef = useRef(false);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         async function fetchFavorites() {
@@ -20,8 +22,9 @@ export function useFavorites() {
 
                     if (response.ok) {
                         const data = await response.json();
-                        // console.log("Fetched favorites from DB:", data);
                         dispatch(loadFavorites(data.favorites || []));
+                        dispatch(setUserImage(data.userImage || { imageUrl: null }));
+                        setGeneratedData(data.generations || []);
                         hasLoadedRef.current = true;
                     } else {
                         console.error("API response not ok:", response.status);
@@ -39,4 +42,5 @@ export function useFavorites() {
 
         fetchFavorites();
     }, [status, session?.user?.email, dispatch]);
+    return generatedData;
 }

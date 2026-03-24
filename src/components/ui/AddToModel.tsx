@@ -1,35 +1,41 @@
 import { useAppDispatch, useAppSelector } from "@/src/store/hooks"
-import { setBottom, setTop, setShoes, setHat, addAccessory } from "@/src/store/model-slice";
+import { setBottom, setTop, setShoes, setAccessory, ModelState, initialCartItemState } from "@/src/store/model-slice";
 
-export default function AddToModel({ item, categoryName, customCategoryName }: { item: any, categoryName: string, customCategoryName: string }) {
+export default function AddToModel({ item, customCategoryName }: { item: any, customCategoryName: string }) {
     const dispatch = useAppDispatch()
-    const model = useAppSelector((state => state.model.model))
-    const iconPath = item.id === model.top.id || item.id === model.bottom.id || item.id === model.shoes.id || item.id === model.hat.id || model.accessories.some((acc) => acc.id === item.id) ? "/icons/icons8-plus-50-filled.png" : "/icons/icons8-plus-50.png"
+    const model = useAppSelector((state => state.model))
+    const iconPath = Object.values(model as Omit<ModelState, 'userImage'>).some(i => i.id === item.id) ? "/icons/icons8-green.png" : "/icons/icons8-plus-50.png"
+    const isSelected = Object.values(model as Omit<ModelState, 'userImage'>).some(i => i.id === item.id);
 
     function handleAddModel(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-
         const lowerCategory = customCategoryName?.toLowerCase();
-
-        if (lowerCategory === "hat") {
-            dispatch(setHat({ id: item.id, image: item.imageUrl }));
-        } else if (lowerCategory === "top") {
-            dispatch(setTop({ id: item.id, image: item.imageUrl }));
-        } else if (lowerCategory === "jeans" || lowerCategory?.includes("jeans")) {
-            dispatch(setBottom({ id: item.id, image: item.imageUrl }));
+        // console.log("item", item)
+        if (lowerCategory === "top") {
+            model.top.id === item.id ? dispatch(setTop({ ...initialCartItemState })) :
+                dispatch(setTop({ id: item.id, name: item.name, url: item.url, imageUrl: `https://${item.imageUrl}`, price: item.price, categoryName: item.categoryName, customCategoryName: item.customCategoryName }));
+        } else if (lowerCategory?.includes("jeans")) {
+            model.bottom.id === item.id ? dispatch(setBottom({ ...initialCartItemState })) :
+                dispatch(setBottom({ id: item.id, name: item.name, url: item.url, imageUrl: `https://${item.imageUrl}`, price: item.price, categoryName: item.categoryName, customCategoryName: item.customCategoryName }));
         } else if (lowerCategory?.includes("shoes") || lowerCategory?.includes("boots") || lowerCategory?.includes("sneakers")) {
-            dispatch(setShoes({ id: item.id, image: item.imageUrl }));
+            model.shoes.id === item.id ? dispatch(setShoes({ ...initialCartItemState })) :
+                dispatch(setShoes({ id: item.id, name: item.name, url: item.url, imageUrl: `https://${item.imageUrl}`, price: item.price, categoryName: item.categoryName, customCategoryName: item.customCategoryName }));
         } else if (lowerCategory === "accessory") {
-            dispatch(addAccessory({ id: item.id, image: item.imageUrl }));
+            model.accessory.id === item.id ? dispatch(setAccessory({ ...initialCartItemState })) :
+                dispatch(setAccessory({ id: item.id, name: item.name, url: item.url, imageUrl: `https://${item.imageUrl}`, price: item.price, categoryName: item.categoryName, customCategoryName: item.customCategoryName }));
         }
-
-        console.log(item);
     }
 
     return (
         <button onClick={(e) => handleAddModel(e)}
-            className="absolute top-2 right-2 p-1 bg-white/80 rounded-full hover:bg-blue/90 transition-colors" >
-            <img src={iconPath} alt="add" width={30} height={30} />
+            className="absolute shadow-lg top-2 right-2 p-1 bg-white/80 rounded-full " >
+            <img
+                src={iconPath}
+                alt="add"
+                width={30}
+                height={30}
+                className={`transition-all  duration-500 hover:scale-110 ${isSelected ? 'rotate-45' : 'rotate-0'}`}
+            />
         </button >
     )
 }

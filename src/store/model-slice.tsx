@@ -1,80 +1,61 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { CartItem } from "./cart-slice";
 
-interface ModelState {
-    model: {
-        top: {
-            id: string;
-            image: string
-        };
-        bottom: {
-            id: string;
-            image: string
-        };
-        shoes: {
-            id: string;
-            image: string
-        };
-        hat: {
-            id: string;
-            image: string
-        };
-        accessories: {
-            id: string;
-            image: string
-        }[]
-    }
+export interface ModelState {
+    userImage: {
+        imageUrl: string;
+    };
+    top: CartItem;
+    bottom: CartItem;
+    shoes: CartItem;
+    accessory: CartItem;
+}
+
+export const initialCartItemState: CartItem = {
+    id: 0,
+    name: "",
+    url: "",
+    imageUrl: "",
+    price: "",
+    categoryName: "",
+    customCategoryName: ""
 }
 
 const initialState: ModelState = {
-    model: {
-        top: {
-            id: "",
-            image: ""
-        },
-        bottom: {
-            id: "",
-            image: ""
-        },
-        shoes: {
-            id: "",
-            image: ""
-        },
-        hat: {
-            id: "",
-            image: ""
-        },
-        accessories: []
-    }
+    userImage: {
+        imageUrl: "",
+    },
+    top: { ...initialCartItemState },
+    bottom: { ...initialCartItemState },
+    shoes: { ...initialCartItemState },
+    accessory: { ...initialCartItemState }
 }
 
 const modelSlice = createSlice({
     name: "model",
     initialState,
     reducers: {
-        setTop(state, action: PayloadAction<{ id: string; image: string }>) {
-            state.model.top.id = action.payload.id
-            state.model.top.image = action.payload.image
+        setUserImage(state, action: PayloadAction<{ imageUrl: string }>) {
+            state.userImage.imageUrl = action.payload.imageUrl
         },
-        setBottom(state, action: PayloadAction<{ id: string; image: string }>) {
-            state.model.bottom.id = action.payload.id
-            state.model.bottom.image = action.payload.image
+        setTop(state, action: PayloadAction<CartItem>) {
+            state.top = action.payload
         },
-        setShoes(state, action: PayloadAction<{ id: string; image: string }>) {
-            state.model.shoes.id = action.payload.id
-            state.model.shoes.image = action.payload.image
+        setBottom(state, action: PayloadAction<CartItem>) {
+            state.bottom = action.payload
         },
-        setHat(state, action: PayloadAction<{ id: string; image: string }>) {
-            state.model.hat.id = action.payload.id
-            state.model.hat.image = action.payload.image
+        setShoes(state, action: PayloadAction<CartItem>) {
+            state.shoes = action.payload
         },
-        addAccessory(state, action: PayloadAction<{ id: string; image: string }>) {
-            state.model.accessories.push({
-                id: action.payload.id,
-                image: action.payload.image
-            })
+        setAccessory(state, action: PayloadAction<CartItem>) {
+            state.accessory = action.payload
+        },
+        setItem(state, action: PayloadAction<{ type: keyof Omit<ModelState, 'userImage'>, item: CartItem }>) {
+            const { type, item } = action.payload;
+            state[type] = item;
         }
     }
 })
 
-export const { setTop, setBottom, setShoes, setHat, addAccessory } = modelSlice.actions
+export const { setUserImage, setTop, setBottom, setShoes, setAccessory, setItem } = modelSlice.actions
 export default modelSlice

@@ -1,5 +1,5 @@
-import { getClothingItems } from "@/src/lib/clothing-fetch";
-import ClothingItem from "@/src/components/clothes/clothing-item";
+import { getClothingItemss } from "@/src/lib/clothing-fetch";
+import ClothingItems from "@/src/components/clothes/clothing-items";
 import { notFound } from "next/navigation";
 
 interface PageProps {
@@ -9,16 +9,14 @@ interface PageProps {
     }>;
 }
 
-
 export default async function GarmentPage({ params }: PageProps) {
     const { gender, garmentType } = await params;
+    const { itemCategories } = await getClothingItemss([garmentType], gender as 'women' | 'men');
 
     const validGenders = ['women', 'men'];
     if (!validGenders.includes(gender.toLowerCase())) {
         notFound();
     }
-
-    const { itemCategories } = await getClothingItems([garmentType], gender as 'women' | 'men');
 
     return (
         <>
@@ -28,7 +26,7 @@ export default async function GarmentPage({ params }: PageProps) {
                         <p className="text-5xl font-bold m-4 ml-50">{category.categoryName}</p>
                         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-4 max-w-[1400px] p-5 mx-auto">
                             {category.items && category.items.length > 0 ? (
-                                <ClothingItem items={category.items} category={category.categoryName} />
+                                <ClothingItems items={category.items} />
                             ) : (
                                 <p>No items found.</p>
                             )}

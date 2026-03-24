@@ -1,20 +1,38 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useAppDispatch } from "../store/hooks";
-import { CartState, clearCart, selectItem } from "../store/cart-slice";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { CartState, CartItem, clearCart, selectItem } from "../store/cart-slice";
+import { ModelState, setItem } from "../store/model-slice";
+import { initialCartItemState } from "../store/model-slice";
 
 export function useFavoriteActions() {
     const { data: session } = useSession();
     const dispatch = useAppDispatch();
+    const model: ModelState = useAppSelector((state) => state.model);
 
-    const toggleFavorite = async (item: { id: number; name: string; imageUrl: string; url: string, price: string; categoryName: string; customCategoryName: string }, currentFavorites: CartState) => {
-        dispatch(selectItem(item));
+    const toggleFavorite = async (item: CartItem, currentFavorites: CartState) => {
+        const modelGarmentEntries = [
+            { key: 'top', garment: model.top },
+            { key: 'bottom', garment: model.bottom },
+            { key: 'shoes', garment: model.shoes },
+            { key: 'accessory', garment: model.accessory }
+        ];
 
-        const isCurrentlyFavorite = currentFavorites.items.some(i => i.id === item.id);
+        const matchingEntry = modelGarmentEntries.find(entry => entry.garment.id === item.id);
+        const isInModel = !!matchingEntry;
+
+        if (isInModel) {
+            dispatch(setItem({ type: matchingEntry.key as keyof Omit<ModelState, 'userImage'>, item: { ...initialCartItemState } }));
+            dispatch(selectItem(item));
+        } else {
+            dispatch(selectItem(item));
+        }
+
+        const isCurrentlyFavorite = currentFavorites.some(i => i.id === item.id);
         const newFavorites = isCurrentlyFavorite
-            ? currentFavorites.items.filter(i => i.id !== item.id)
-            : [...currentFavorites.items, item];
+            ? currentFavorites.filter(i => i.id !== item.id)
+            : [...currentFavorites, item];
 
         if (session?.user?.email) {
             try {

@@ -1,38 +1,36 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface CartState {
-  items: {
-    id: number;
-    name: string;
-    imageUrl: string;
-    url: string;
-    price: string;
-    categoryName: string;
-    customCategoryName: string;
-  }[]
+export interface CartItem {
+  id: number;
+  name: string;
+  url: string;
+  imageUrl: string;
+  price: string;
+  categoryName: string;
+  customCategoryName: string;
 }
 
-const initialState: CartState = {
-  items: [],
-};
+export type CartState = CartItem[];
+
+const initialState: CartState = [];
 
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    selectItem(state, action: PayloadAction<CartState["items"][0]>) {
-      const existingItem = state.items.find((item) => item.id === action.payload.id);
+    selectItem(state, action: PayloadAction<CartItem>) {
+      const existingItem = state.find((item) => item.id === action.payload.id);
       if (existingItem) {
-        state.items = state.items.filter((item) => item.id !== action.payload.id);
+        return state.filter((item) => item.id !== action.payload.id);
       } else {
-        state.items.push(action.payload);
+        state.push(action.payload);
       }
     },
-    loadFavorites(state, action: PayloadAction<CartState["items"]>) {
-      state.items = action.payload;
+    loadFavorites(state, action: PayloadAction<CartItem[]>) {
+      return action.payload;
     },
     clearCart(state) {
-      state.items = [];
+      return [];
     }
   },
 });

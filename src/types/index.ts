@@ -1,4 +1,4 @@
-import { CartState } from "../store/cart-slice";
+import { CartItem, CartState } from "../store/cart-slice";
 
 export type Credentials = {
     email: string;
@@ -11,12 +11,26 @@ export type User = {
     password: string;
 };
 
+export type SearchResultItem = {
+    id: number;
+    name: string;
+    url: string;
+    imageUrl: string;
+    price: {
+        current: {
+            text: string;
+        }
+    };
+    categoryName: string;
+    customCategoryName: string;
+};
+
 // Extend NextAuth types
 declare module "next-auth" {
     interface Session {
         user: {
             email: string;
-            favorites?: CartState;
+            favorites?: CartItem[];
         }
     }
 

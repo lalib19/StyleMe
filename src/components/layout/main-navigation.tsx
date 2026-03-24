@@ -8,7 +8,7 @@ import NavLink from "../ui/NavLink"
 import { selectGender } from "@/src/store/filter-slice";
 
 export default function MainNavigation() {
-    const items = useAppSelector((state) => state.cart.items);
+    const items = useAppSelector((state) => state.cart);
     const dispatch = useAppDispatch()
     const { data: session } = useSession();
 
@@ -17,7 +17,7 @@ export default function MainNavigation() {
     }
 
     return (
-        <header className="flex h-16 items-center justify-between px-50 bg-custom-bg-nav shadow-md">
+        <header className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-50 bg-custom-bg-nav shadow-md">
             <Link href={"/"}>
                 <Logo />
             </Link>
@@ -33,10 +33,10 @@ export default function MainNavigation() {
                         <li><NavLink href="/auth">Log In</NavLink></li>
                     )}
                     <li className="relative"><Link href="/favorites">
-                        <img src="/icons/icons8-heart-48-filled.png" alt="heart" height={24} width={24} />
+                        <img src="/icons/icons8-heart-48-filled.png" alt="heart" height={28} width={28} />
                         {items.length > 0 && (
-                            <div className="w-3 h-3 bg-green-200 rounded-full flex items-center justify-center absolute -top-1 -right-2">
-                                <p className="text-black text-xs ">{items.length}</p>
+                            <div className="w-4 h-4 bg-green-200 rounded-full flex items-center justify-center absolute -top-1 -right-2">
+                                <p className="text-black text-xs ">{items.length > 9 ? "9+" : items.length}</p>
                             </div>
                         )}
                     </Link></li>

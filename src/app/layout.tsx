@@ -5,6 +5,15 @@ import MainNavigation from '../components/layout/main-navigation';
 import ReduxProvider from '../lib/ReduxProvider';
 import FavoritesProvider from '../components/favorites-provider';
 import FilterNavigation from '../components/layout/filter-navigation';
+import { Red_Hat_Display } from "next/font/google";
+import { Toaster } from 'react-hot-toast';
+
+// Configure Red Hat Display font
+const redHatDisplay = Red_Hat_Display({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: "StyleMe",
@@ -19,13 +28,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={redHatDisplay.className}>
         <SessionProvider>
           <ReduxProvider>
             <FavoritesProvider />
             <MainNavigation />
             <FilterNavigation />
             {children}
+            <Toaster position='top-right' toastOptions={{ duration: 3000 }} />
           </ReduxProvider>
         </SessionProvider>
       </body>

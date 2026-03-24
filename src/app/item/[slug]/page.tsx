@@ -1,4 +1,4 @@
-export default async function ClothingItemDetail({
+export default async function ClothingItemsDetail({
     searchParams
 }: {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>

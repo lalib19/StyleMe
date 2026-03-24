@@ -9,7 +9,7 @@ import { syncFavoritesToServer } from "../lib/favorites-api"
 
 async function createUser(email: string, password: string) {
     const response = await fetch("/api/auth/signup", {
-        method: "POST",
+        method: "PUT",
         body: JSON.stringify({ email, password }),
         headers: { "Content-Type": "application/json" }
     })
@@ -54,7 +54,7 @@ export default function AuthForm() {
                 setError(result.error ? result.error
                     : "Invalid email or password")
                 setIsLoading(false)
-            } else if (favoriteItems.items && favoriteItems.items.length > 0) {
+            } else if (favoriteItems && favoriteItems.length > 0) {
                 try {
                     await syncFavoritesToServer(favoriteItems);
                 } catch (favoriteError) {
@@ -72,7 +72,7 @@ export default function AuthForm() {
 
                 if (result?.error) {
                     setError(result.error);
-                } else if (favoriteItems.items && favoriteItems.items.length > 0) {
+                } else if (favoriteItems && favoriteItems.length > 0) {
                     try {
                         await syncFavoritesToServer(favoriteItems);
                     } catch (favoriteError) {

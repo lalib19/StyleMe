@@ -21,7 +21,7 @@ export default function FilterNavigation() {
                         )}
                         <NavLink href={`/${gender}/jeans`}>Jeans</NavLink>
                         <NavLink href={`/${gender}/shoes`}>Shoes</NavLink>
-                        <NavLink href={`/${gender}/accessories`}>Accessories</NavLink>
+                        <NavLink href={`/${gender}/accessory`}>Accessories</NavLink>
                     </>
                 </header>
             )}

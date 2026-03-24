@@ -2,9 +2,9 @@
  * Client-side API functions for favorites management
  */
 
-import { CartState } from "../store/cart-slice";
+import { CartItem } from "../store/cart-slice";
 
-export async function syncFavoritesToServer(favoriteItems: CartState): Promise<{ success: boolean }> {
+export async function syncFavoritesToServer(favoriteItems: CartItem[]): Promise<{ success: boolean }> {
     const response = await fetch("/api/favorites", {
         method: "PUT",
         body: JSON.stringify({ favoriteItems }),

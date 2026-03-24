@@ -7,8 +7,8 @@ export default function Button({
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
     children: ReactNode
 }) {
-    const classes = `px-4 py-2 text-md md:text-base rounded-md bg-green-100 hover:bg-green-200 hover:cursor-pointer ${className || ""}`
-    const disabledClasses = "opacity-50 cursor-not-allowed hover:bg-green-100"
+    const classes = `px-4 py-2 text-md md:text-base rounded-md bg-sky-300 hover:bg-sky-400 hover:cursor-pointer ${className || ""}`
+    const disabledClasses = "opacity-50 cursor-not-allowed hover:bg-sky-200"
 
     return (
         <button

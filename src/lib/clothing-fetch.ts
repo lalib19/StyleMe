@@ -10,7 +10,7 @@ const options = {
 };
 
 // unstable cache so it doesn't refetch on save during development
-export const getClothingItems = unstable_cache(
+export const getClothingItemss = unstable_cache(
     async (garmentTypes: string[], gender: 'women' | 'men' | 'all' = 'all') => {
 
         const itemCategories = [];
@@ -43,7 +43,7 @@ export const getClothingItems = unstable_cache(
 
 // Would be needed to get the latest details for favorite items, but currently we save all details in the database so not necessary and they are fresh enough for our use case
 
-// export const getFavoriteClothingItemsFromAPI = unstable_cache(
+// export const getFavoriteClothingItemssFromAPI = unstable_cache(
 //     async (itemIds: string[]) => {
 //         const favoriteItems = [];
 //         for (const itemId of itemIds) {
