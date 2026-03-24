@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { CartItem } from "@/src/store/cart-slice";
-import GenerationData from "../clothes/generation-data";
 
 interface ModalGeneratedProps {
     isOpen: boolean;
@@ -70,7 +69,6 @@ export default function ModalGenerated({
                         ))}
                     </div>
                 </div>
-                // <GenerationData garments={garments} />
             )}
         </dialog>
     );

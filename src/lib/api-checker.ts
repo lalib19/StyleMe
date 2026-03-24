@@ -1,5 +1,14 @@
 'use server';
 
+interface CategoryTestResult {
+    categoryId: number;
+    hasProducts: boolean;
+    productCount: number;
+    productName: string;
+    responseTime?: number;
+    error?: string;
+}
+
 const options = {
     method: 'GET',
     headers: {
@@ -36,14 +45,10 @@ export const checkApiEndpoint = async () => {
 }
 
 export async function checkAllCategoryProducts(startId: number = 0, endId: number = 1000) {
-    const results: { categoryId: number; hasProducts: boolean; productCount: number; productName: string; error?: string }[] = [];
+    const results: CategoryTestResult[] = [];
     const startTime = performance.now();
 
     console.log(`Testing category IDs from ${startId} to ${endId}...`);
-
-    // Debug API credentials
-    console.log('RAPIDAPI_KEY:', process.env.RAPIDAPI_KEY ? 'Present' : 'MISSING');
-    console.log('RAPIDAPI_HOST:', process.env.RAPIDAPI_HOST ? 'Present' : 'MISSING');
 
     for (let i = startId; i <= endId; i++) {
         const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${i}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
@@ -51,8 +56,6 @@ export async function checkAllCategoryProducts(startId: number = 0, endId: numbe
 
         try {
             const response = await fetch(url, options);
-
-            // Check response status
             if (!response.ok) {
                 console.error(`Category ${i}: HTTP ${response.status} - ${response.statusText}`);
             }
@@ -60,14 +63,11 @@ export async function checkAllCategoryProducts(startId: number = 0, endId: numbe
             const result = await response.json();
             const requestEnd = performance.now();
             const responseTime = Math.round(requestEnd - requestStart);
-
-            // Log raw API response for debugging
             console.log(`Category ${i} raw response:`, JSON.stringify(result, null, 2));
 
             const productCount = result.products?.length || 0;
             const productName = result.products?.[0]?.name || "No products";
 
-            // ALWAYS push results (not just when productCount > 0)
             results.push({
                 categoryId: i,
                 hasProducts: productCount > 0,
@@ -96,8 +96,7 @@ export async function checkAllCategoryProducts(startId: number = 0, endId: numbe
     return results;
 }
 
-// Add CSV export function
-async function saveToCsv(results: any[], startId: number, endId: number) {
+async function saveToCsv(results: CategoryTestResult[], startId: number, endId: number) {
     const fs = await import('fs/promises');
     const path = await import('path');
 

@@ -1,8 +1,3 @@
-/**
- * ASOS API Category IDs organized by gender and garment type
- * Based on official ASOS navigation structure
- */
-
 export interface CategoryMapping {
     [key: string]: {
         id: string;
@@ -115,7 +110,6 @@ export function getCategoryId(garmentType: string, gender: 'women' | 'men' | 'al
         return ids.length > 0 ? ids : undefined;
     }
 
-    // Handle specific gender
     const categories = asosCategories[gender as keyof typeof asosCategories];
     return categories?.[garmentType as keyof typeof categories]?.id;
 }

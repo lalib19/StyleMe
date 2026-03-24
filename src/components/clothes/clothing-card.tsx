@@ -29,7 +29,7 @@ export default function ClothingCard({ item, isFavorite = false }: { item: CartI
                         loading="lazy"
                         className="w-full h-auto object-cover"
                     />
-                    {isFavorite && <AddToModel item={item} customCategoryName={item.customCategoryName} />}
+                    {isFavorite && <AddToModel item={item as CartItem} customCategoryName={item.customCategoryName} />}
                     <button
                         onClick={(e) => {
                             e.preventDefault();

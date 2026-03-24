@@ -125,9 +125,6 @@ export default function FavoritesPage() {
                     Favorites
                     {displayedSection === "favorites" && (
                         <motion.div
-                        // className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-lg"
-                        // layoutId="activeTab"
-                        // transition={{ type: "spring", stiffness: 500, damping: 30 }}
                         />
                     )}
                 </button>
@@ -141,9 +138,6 @@ export default function FavoritesPage() {
                     Generations
                     {displayedSection === "generations" && (
                         <motion.div
-                        // className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-b-lg"
-                        // layoutId="activeTab"
-                        // transition={{ type: "spring", stiffness: 500, damping: 30 }}
                         />
                     )}
                 </button>

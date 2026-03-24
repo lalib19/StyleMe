@@ -1,7 +1,8 @@
 import { useAppDispatch, useAppSelector } from "@/src/store/hooks"
 import { setBottom, setTop, setShoes, setAccessory, ModelState, initialCartItemState } from "@/src/store/model-slice";
+import { CartItem } from "@/src/store/cart-slice";
 
-export default function AddToModel({ item, customCategoryName }: { item: any, customCategoryName: string }) {
+export default function AddToModel({ item, customCategoryName }: { item: CartItem, customCategoryName: string }) {
     const dispatch = useAppDispatch()
     const model = useAppSelector((state => state.model))
     const iconPath = Object.values(model as Omit<ModelState, 'userImage'>).some(i => i.id === item.id) ? "/icons/icons8-green.png" : "/icons/icons8-plus-50.png"
@@ -10,7 +11,6 @@ export default function AddToModel({ item, customCategoryName }: { item: any, cu
     function handleAddModel(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
         const lowerCategory = customCategoryName?.toLowerCase();
-        // console.log("item", item)
         if (lowerCategory === "top") {
             model.top.id === item.id ? dispatch(setTop({ ...initialCartItemState })) :
                 dispatch(setTop({ id: item.id, name: item.name, url: item.url, imageUrl: `https://${item.imageUrl}`, price: item.price, categoryName: item.categoryName, customCategoryName: item.customCategoryName }));
