@@ -22,125 +22,110 @@ cloudinary.config({
 
 
 async function fetchImageAsBase64(imageUrl: string): Promise<{ inlineData: { data: string; mimeType: string } }> {
-    // Use Cloudinary proxy to bypass ASOS CDN protection
     console.log(`Original image URL: ${imageUrl}`);
 
-    // Try different Cloudinary URL formats
+    // Simple Cloudinary fetch URL without transformations
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/image/fetch/${imageUrl}`;
 
-    // Format 1: Basic fetch without transformations
-    const basicFetchUrl = `https://res.cloudinary.com/${cloudName}/image/fetch/${encodeURIComponent(imageUrl)}`;
+    console.log(`Cloudinary URL: ${cloudinaryUrl}`);
 
-    // Format 2: With transformations
-    const transformedFetchUrl = `https://res.cloudinary.com/${cloudName}/image/fetch/f_auto,q_auto/${encodeURIComponent(imageUrl)}`;
+    const response = await fetch(cloudinaryUrl);
 
-    const urlsToTry = [basicFetchUrl, transformedFetchUrl];
-
-    for (let i = 0; i < urlsToTry.length; i++) {
-        const cloudinaryUrl = urlsToTry[i];
-        console.log(`Trying Cloudinary URL ${i + 1}: ${cloudinaryUrl}`);
-
-        try {
-            const response = await fetch(cloudinaryUrl);
-
-            if (response.ok) {
-                console.log(`Success with URL format ${i + 1}`);
-                const imageArrayBuffer = await response.arrayBuffer();
-                const base64ImageData = Buffer.from(imageArrayBuffer).toString('base64');
-                const contentType = response.headers.get('Content-Type') || 'image/jpeg';
-
-                return {
-                    inlineData: {
-                        data: base64ImageData,
-                        mimeType: contentType
-                    }
-                };
-            } else {
-                console.log(`URL ${i + 1} failed: ${response.status} ${response.statusText}`);
-            }
-        } catch (error) {
-            console.log(`URL ${i + 1} threw error:`, error);
-        }
+    if (!response.ok) {
+        console.error(`Cloudinary fetch failed: ${response.status} ${response.statusText}`);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    throw new Error(`All Cloudinary fetch attempts failed for: ${imageUrl}`);
-    export async function POST(request: Request) {
-        const { modelImageUrl, garments } = await request.json();
+    const imageArrayBuffer = await response.arrayBuffer();
+    const base64ImageData = Buffer.from(imageArrayBuffer).toString('base64');
+    const contentType = response.headers.get('Content-Type') || 'image/jpeg';
 
-        const session = await auth();
-        if (!session || !session.user?.email) {
-            return new Response(JSON.stringify({
-                message: "Authentication required"
-            }), {
-                status: 401,
-                headers: { 'Content-Type': 'application/json' }
-            });
+    return {
+        inlineData: {
+            data: base64ImageData,
+            mimeType: contentType
         }
+    };
+}
 
-        const limitCheck = await checkGenerationLimit(session.user.email);
-        if (!limitCheck.allowed) {
-            return new Response(JSON.stringify({
-                message: limitCheck.message,
-                currentCount: limitCheck.currentCount,
-                maxGenerations: limitCheck.maxGenerations
-            }), {
-                status: 429,
-                headers: { 'Content-Type': 'application/json' }
-            });
-        }
+export async function POST(request: Request) {
+    const { modelImageUrl, garments } = await request.json();
 
-        console.log(`Starting AI generation (${limitCheck.currentCount + 1}/${limitCheck.maxGenerations})`);
-
-        const prompt =
-            "Put all the clothes that are in the center of each images on the model provided as the first image. Keep the model's identity and pose intact. If some garments are missing just keep the ones on the model.";
-        const aspectRatio = '9:16';
-        const resolution = '512';
-
-        console.log('Fetching model image:', modelImageUrl);
-        const modelImage = await fetchImageAsBase64(modelImageUrl);
-        console.log('Model image fetched successfully');
-
-        console.log('Fetching garment images:', garments.length, 'items');
-        const garmentsImages = await Promise.all(garments.map((garment: { imageUrl: string }) => fetchImageAsBase64(garment.imageUrl)));
-
-        const response = await ai.models.generateContent({
-            model: 'gemini-3.1-flash-image-preview',
-            contents: [{ text: prompt }, modelImage, ...garmentsImages],
-            config: {
-                responseModalities: ['TEXT', 'IMAGE'],
-                imageConfig: {
-                    aspectRatio: aspectRatio,
-                    imageSize: resolution,
-                },
-            },
+    const session = await auth();
+    if (!session || !session.user?.email) {
+        return new Response(JSON.stringify({
+            message: "Authentication required"
+        }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' }
         });
+    }
 
-        const parts = response.candidates?.[0]?.content?.parts;
-        if (!parts?.length) {
-            return new Response(JSON.stringify({ message: "No content returned from AI model" }), { status: 500 });
-        }
+    const limitCheck = await checkGenerationLimit(session.user.email);
+    if (!limitCheck.allowed) {
+        return new Response(JSON.stringify({
+            message: limitCheck.message,
+            currentCount: limitCheck.currentCount,
+            maxGenerations: limitCheck.maxGenerations
+        }), {
+            status: 429,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
 
-        for (const part of parts) {
-            if (part.text) {
-                console.log("text part", part.text);
-            } else if (part.inlineData) {
-                const imageData: string | undefined = part.inlineData.data;
-                if (imageData) {
-                    const buffer = Buffer.from(imageData, "base64");
-                    fs.writeFileSync("image.png", buffer);
-                    console.log("Image saved as image.png");
+    console.log(`Starting AI generation (${limitCheck.currentCount + 1}/${limitCheck.maxGenerations})`);
 
-                    const uploadResult = await uploadImageToCloudinary(buffer) as CloudinaryUploadResult;
+    const prompt =
+        "Put all the clothes that are in the center of each images on the model provided as the first image. Keep the model's identity and pose intact. If some garments are missing just keep the ones on the model.";
+    const aspectRatio = '9:16';
+    const resolution = '512';
 
-                    await storeGeneratedImageData(session.user.email, modelImageUrl, garments, uploadResult.secure_url);
-                    await incrementCachedGenerationCount(session.user.email);
+    console.log('Fetching model image:', modelImageUrl);
+    const modelImage = await fetchImageAsBase64(modelImageUrl);
+    console.log('Model image fetched successfully');
 
-                    return new Response(JSON.stringify({
-                        message: "File uploaded successfully",
-                        imageUrl: uploadResult.secure_url,
-                        publicId: uploadResult.public_id
-                    }), { status: 200 });
-                }
+    console.log('Fetching garment images:', garments.length, 'items');
+    const garmentsImages = await Promise.all(garments.map((garment: { imageUrl: string }) => fetchImageAsBase64(garment.imageUrl)));
+
+    const response = await ai.models.generateContent({
+        model: 'gemini-3.1-flash-image-preview',
+        contents: [{ text: prompt }, modelImage, ...garmentsImages],
+        config: {
+            responseModalities: ['TEXT', 'IMAGE'],
+            imageConfig: {
+                aspectRatio: aspectRatio,
+                imageSize: resolution,
+            },
+        },
+    });
+
+    const parts = response.candidates?.[0]?.content?.parts;
+    if (!parts?.length) {
+        return new Response(JSON.stringify({ message: "No content returned from AI model" }), { status: 500 });
+    }
+
+    for (const part of parts) {
+        if (part.text) {
+            console.log("text part", part.text);
+        } else if (part.inlineData) {
+            const imageData: string | undefined = part.inlineData.data;
+            if (imageData) {
+                const buffer = Buffer.from(imageData, "base64");
+                fs.writeFileSync("image.png", buffer);
+                console.log("Image saved as image.png");
+
+                const uploadResult = await uploadImageToCloudinary(buffer) as CloudinaryUploadResult;
+
+                await storeGeneratedImageData(session.user.email, modelImageUrl, garments, uploadResult.secure_url);
+                await incrementCachedGenerationCount(session.user.email);
+
+                return new Response(JSON.stringify({
+                    message: "File uploaded successfully",
+                    imageUrl: uploadResult.secure_url,
+                    publicId: uploadResult.public_id
+                }), { status: 200 });
             }
         }
     }
+}
