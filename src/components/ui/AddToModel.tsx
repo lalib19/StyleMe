@@ -1,10 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/src/store/hooks"
 import { setBottom, setTop, setShoes, setAccessory, ModelState, initialCartItemTypeState } from "@/src/store/model-slice";
 import { CartItemType } from "@/src/store/cart-slice";
+import Image from "next/image";
 
 export default function AddToModel({ item, customCategoryName }: { item: CartItemType, customCategoryName: string }) {
     const dispatch = useAppDispatch()
-    const model = useAppSelector((state => state.model))
+    const model = useAppSelector((state) => state.model)
     const iconPath = Object.values(model as Omit<ModelState, 'userImage'>).some(i => i.id === item.id) ? "/icons/icons8-green.png" : "/icons/icons8-plus-50.png"
     const isSelected = Object.values(model as Omit<ModelState, 'userImage'>).some(i => i.id === item.id);
 
@@ -29,7 +30,7 @@ export default function AddToModel({ item, customCategoryName }: { item: CartIte
     return (
         <button onClick={(e) => handleAddModel(e)}
             className="absolute shadow-lg top-2 right-2 p-1 bg-white/80 rounded-full " >
-            <img
+            <Image
                 src={iconPath}
                 alt="add"
                 width={30}
