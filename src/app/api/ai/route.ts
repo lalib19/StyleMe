@@ -21,32 +21,64 @@ cloudinary.config({
 });
 
 
-async function fetchImageAsBase64(imageUrl: string) {
-    const response = await fetch(imageUrl, {
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'Accept': 'image/webp,image/avif,image/*,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-        }
-    });
-    const contentType = response.headers.get('Content-Type');
-    if (!response.ok) throw new Error(`Impossible de charger l'image: ${response.statusText}`);
+async function fetchImageAsBase64(imageUrl: string, maxRetries = 3) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
-    let imageArrayBuffer: ArrayBuffer;
-    try {
-        imageArrayBuffer = await response.arrayBuffer();
-    } catch (error) {
-        console.error("Error fetching image as array buffer:", error);
-        throw new Error("Failed to fetch image data");
-    }
-    const base64ImageData = Buffer.from(imageArrayBuffer).toString('base64');
+            const response = await fetch(imageUrl, {
+                signal: controller.signal,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                    'Accept': 'image/webp,image/avif,image/*,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache',
+                    'Referer': 'https://www.asos.com/',
+                    'Origin': 'https://www.asos.com',
+                    'Sec-Fetch-Site': 'cross-site',
+                    'Sec-Fetch-Mode': 'no-cors',
+                    'Sec-Fetch-Dest': 'image',
+                    'Connection': 'keep-alive',
+                    'DNT': '1'
+                }
+            });
 
-    return {
-        inlineData: {
-            data: base64ImageData,
-            mimeType: contentType
+            clearTimeout(timeoutId);
+            const contentType = response.headers.get('Content-Type');
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            let imageArrayBuffer: ArrayBuffer;
+            try {
+                imageArrayBuffer = await response.arrayBuffer();
+            } catch (error) {
+                console.error("Error fetching image as array buffer:", error);
+                throw new Error("Failed to fetch image data");
+            }
+
+            const base64ImageData = Buffer.from(imageArrayBuffer).toString('base64');
+
+            return {
+                inlineData: {
+                    data: base64ImageData,
+                    mimeType: contentType
+                }
+            };
+
+        } catch (error) {
+            console.error(`Attempt ${attempt}/${maxRetries} failed for ${imageUrl}:`, error);
+
+            if (attempt === maxRetries) {
+                throw new Error(`Failed to fetch image after ${maxRetries} attempts: ${error}`);
+            }
+
+            // Wait before retry (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
         }
     }
 }
@@ -82,8 +114,14 @@ export async function POST(request: Request) {
         "Put all the clothes that are in the center of each images on the model provided as the first image. Keep the model's identity and pose intact. If some garments are missing just keep the ones on the model.";
     const aspectRatio = '9:16';
     const resolution = '512';
+
+    console.log('Fetching model image:', modelImageUrl);
     const modelImage = await fetchImageAsBase64(modelImageUrl);
+    console.log('Model image fetched successfully');
+
+    console.log('Fetching garment images:', garments.length, 'items');
     const garmentsImages = await Promise.all(garments.map((garment: { imageUrl: string }) => fetchImageAsBase64(garment.imageUrl)));
+    console.log('All garment images fetched successfully');
 
     const response = await ai.models.generateContent({
         model: 'gemini-3.1-flash-image-preview',
