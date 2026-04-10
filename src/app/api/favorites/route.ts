@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/authOptions";
 import { storeFavoriteItems, getUserDataFromDB } from "../../../lib/db";
+import { setCachedGenerationCount } from "../../../lib/redis";
 
 export async function GET() {
     try {
@@ -11,7 +12,9 @@ export async function GET() {
         }
         const { favorites, userImage, generations } = await getUserDataFromDB(session.user.email);
         console.log("API: Fetched favorites for", session.user.email);
-        return NextResponse.json({ favorites, userImage, generations });
+        const generationCount = generations.length;
+        await setCachedGenerationCount(session.user.email, generationCount);
+        return NextResponse.json({ favorites, userImage, generations, generationCount });
 
     } catch (error) {
         console.error("Error fetching favorite items:", error);

@@ -1,14 +1,16 @@
 "use client"
 
-import { CartItem } from "@/src/store/cart-slice";
+import { CartItemType } from "@/src/store/cart-slice";
 import ClothingCard from "./clothing-card";
 import { SearchResultItem } from "@/src/types";
 
-export default function ClothingItems({ items }: { items: SearchResultItem[] | CartItem[] }) {
+export default function ClothingItems({ items }: { items: SearchResultItem[] | CartItemType[] }) {
     return (
         items.map((item) => {
             return (
-                <ClothingCard key={item.id} item={item} />
+                <div key={item.id} className="flex justify-center">
+                    <ClothingCard key={item.id} item={item} />
+                </div>
             )
         })
     )

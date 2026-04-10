@@ -1,33 +1,26 @@
 "use client"
 
-import React, { JSX, useState, useEffect } from "react";
+import React, { JSX, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useFavorites } from "@/src/hooks/useFavorites";
-import { useFavoriteActions } from "@/src/hooks/useFavoriteActions";
-import { useAppSelector } from "@/src/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/src/store/hooks";
 import { asosCategories } from "@/src/lib/asos-categories";
 import GarmentSelector from "@/src/components/layout/garment-selector";
 import ClothingCard from "@/src/components/clothes/clothing-card";
 import Link from "next/link";
-import { CartItem } from "@/src/store/cart-slice";
+import { GenerationDataType, setNewGenerations } from "@/src/store/generations-slice";
 import ModelClothingDetail from "@/src/components/clothes/generation-data";
 import { motion, AnimatePresence } from "framer-motion";
 import { Transition } from "framer-motion";
 
-export type GenerationDataType = {
-    id: number;
-    userImage: string;
-    garments: CartItem[];
-    generatedImageUrl: string;
-}
 
 
 export default function FavoritesPage() {
     const [displayedSection, setDisplayedSection] = useState<"favorites" | "generations">("favorites");
     const [direction, setDirection] = useState(0);
     const { data: session, status } = useSession();
-    const { clearFavorites } = useFavoriteActions();
-    const generations = useFavorites() || [];
+    const dispatch = useAppDispatch();
+    const generations = useAppSelector((state) => state.generations.generations);
+    const newGenerations = useAppSelector((state) => state.generations.newGenerations);
     const favoriteItems = useAppSelector((state) => state.cart);
     const customCategories = Object.keys(asosCategories.women)
 
@@ -39,7 +32,7 @@ export default function FavoritesPage() {
         );
     }
 
-    const favoritesContent: JSX.Element | null = <ul className="grid gap-4">
+    const favoritesContent: JSX.Element | null = <ul>
         {favoriteItems.length > 0 ? customCategories.map(cat => {
             const categoryItems = favoriteItems.filter(item =>
                 item.customCategoryName.toLowerCase() === cat.toLowerCase()
@@ -48,11 +41,10 @@ export default function FavoritesPage() {
             if (categoryItems.length === 0) return null;
 
             return (
-                <div key={cat}>
+                <div key={cat} className="flex flex-col w-full ">
                     <h2 className="text-xl font-bold mb-4 ml-4 capitalize">{cat}</h2>
-                    <div className="flex flex-wrap gap-4 mb-10">
+                    <div className=" flex flex-wrap gap-4 mb-10 ml-3">
                         {categoryItems.map((item) => {
-
                             return (
                                 <ClothingCard key={item.id} item={item} isFavorite={true} />
                             )
@@ -64,13 +56,11 @@ export default function FavoritesPage() {
     </ul>
 
     const generationsContent: JSX.Element | null = generations.length > 0 ? (
-        <div className="mt-8  w-full flex flex-col items-center">
-            <ul>{generations.map((generation: GenerationDataType) => (
-                <li className="flex items-center" key={generation.id}>
+        <div className="mt-8 w-3/4 flex justify-center">
+            <ul className="">{generations.map((generation: GenerationDataType) => (
+                <li className="flex mb-10 max-h-80 sm:max-h-100 md:max-h-150 lg:max-h-200" key={generation.id}>
                     {generation.generatedImageUrl && (
-                        <div className="aspect-9/16 w-90 sm:w-100 lg:w-110 xl:w-120">
-                            <img src={generation.generatedImageUrl} alt="Original" className="aspect-9/16 w-90 sm:w-100 lg:w-110 xl:w-120 rounded" />
-                        </div>
+                        <img src={generation.generatedImageUrl} alt="Original" className="aspect-9/16 max-h-45 sm:max-h-100 md:max-h-150 lg:max-h-200 rounded ml-5 " />
                     )}
                     <ModelClothingDetail key={generation.id} garments={generation.garments} />
                 </li>
@@ -81,6 +71,10 @@ export default function FavoritesPage() {
     const handleTabSwitch = (newSection: "favorites" | "generations") => {
         if (newSection === displayedSection) return;
 
+        if (newSection === "generations" && newGenerations) {
+            dispatch(setNewGenerations(false));
+        }
+
         const newDirection = newSection === "generations" ? 1 : -1;
         setDirection(newDirection);
         setDisplayedSection(newSection);
@@ -88,7 +82,7 @@ export default function FavoritesPage() {
 
     const slideVariants = {
         enter: (direction: number) => ({
-            x: direction > 0 ? 300 : -300,
+            x: direction > 0 ? '100%' : '-100%',
             opacity: 0
         }),
         center: {
@@ -98,7 +92,7 @@ export default function FavoritesPage() {
         },
         exit: (direction: number) => ({
             zIndex: 0,
-            x: direction < 0 ? 300 : -300,
+            x: direction < 0 ? '100%' : '-100%',
             opacity: 0
         })
     };
@@ -109,9 +103,9 @@ export default function FavoritesPage() {
     };
 
     return (
-        <div className="flex flex-col items-center mt-8 mx-auto w-3/4">
+        <div className=" flex flex-col items-center mt-8 ">
             {!session ? (
-                <p><Link href="/auth" className="underline">Sign In</Link> to register your favorites!</p>
+                <p className="mb-3"><Link href="/auth" className="underline">Sign In</Link> to register your favorites!</p>
             ) : null}
 
             <div className="flex space-x-3 sm:space-x-10 mb-8">
@@ -136,6 +130,9 @@ export default function FavoritesPage() {
                         }`}
                 >
                     Generations
+                    {newGenerations && (
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+                    )}
                     {displayedSection === "generations" && (
                         <motion.div
                         />
@@ -145,7 +142,7 @@ export default function FavoritesPage() {
 
             <GarmentSelector />
 
-            <div className="relative w-full ">
+            <div className="relative w-full min-h-96 overflow-hidden">
                 <AnimatePresence mode="wait" custom={direction}>
                     <motion.div
                         key={displayedSection}
@@ -155,7 +152,7 @@ export default function FavoritesPage() {
                         animate="center"
                         exit="exit"
                         transition={swipeTransition}
-                        className="absolute inset-0 w-full"
+                        className="w-full pr-32 sm:pr-44 lg:pr-48"
                     >
                         {displayedSection === "favorites" ? favoritesContent : generationsContent}
                     </motion.div>

@@ -1,12 +1,12 @@
 "use client"
 
-import "./garment-selector.css";
+import "./garment-selector.css"
 import Button from "../ui/Button";
 import ImageGeneration from "../ai/image-generation";
 import GarmentSlot from "../ui/GarmentSlot";
 import { useAppDispatch, useAppSelector } from "@/src/store/hooks";
 import { useRef, useState } from "react";
-import { setUserImage, setItem, initialCartItemState, ModelState } from "@/src/store/model-slice";
+import { setUserImage, setItem, initialCartItemTypeState, ModelState } from "@/src/store/model-slice";
 
 export default function GarmentSelector() {
     const [isUploading, setIsUploading] = useState(false);
@@ -74,12 +74,12 @@ export default function GarmentSelector() {
     }
 
     function removeGarment(type: keyof Omit<ModelState, 'userImage'>) {
-        dispatch(setItem({ type, item: { ...initialCartItemState } }));
+        dispatch(setItem({ type, item: { ...initialCartItemTypeState } }));
     }
 
     return (
-        <div className="flex flex-col h-1/3 sm:h-3/5 lg:h-4/5 w-30 sm:w-40 lg:w-40 fixed top-40 sm:top-40 lg:top-26 right-2 sm:right-3 lg:right-5 justify-center items-center">
-            <div className="flex flex-col  border-custom-bg-nav border-2 sm:border-3 lg:border-5 rounded-xl lg:rounded-2xl mt-20 sm:mt-0 mb-5 w-full" >
+        <div className="flex flex-col h-2/3 sm:h-4/5 lg:h-4/5 w-30 sm:w-40 lg:w-40 fixed top-40 sm:top-40 lg:top-26 right-2 sm:right-3 lg:right-5 justify-center items-center z-50">
+            <div className="flex flex-col  border-custom-bg-nav border-2 sm:border-3 lg:border-5 rounded-xl lg:rounded-2xl mt-20 sm:mt-5 mb-5 w-full" >
                 <div className="garment-items border-b-0! cursor-pointer relative group" onClick={() => deleteModelImage()}>
                     {model.userImage.imageUrl ? (isUploading || isDeleting ? <div className="flex items-center gap-2">
                         <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

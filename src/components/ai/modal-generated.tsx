@@ -2,20 +2,20 @@
 
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { CartItem } from "@/src/store/cart-slice";
+import { CartItemType } from "@/src/store/cart-slice";
 
 interface ModalGeneratedProps {
     isOpen: boolean;
+    isLoading: boolean;
     onClose: () => void;
-    isLoading?: boolean;
     generatedImage: string;
-    garments: CartItem[];
+    garments: CartItemType[];
 }
 
 export default function ModalGenerated({
     isOpen,
+    isLoading,
     onClose,
-    isLoading = false,
     generatedImage,
     garments
 }: ModalGeneratedProps) {
@@ -33,7 +33,7 @@ export default function ModalGenerated({
     }, [isOpen]);
 
     const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-        if (e.target === e.currentTarget) {
+        if ((e.target === e.currentTarget) && !isLoading) {
             onClose();
         }
     };
@@ -44,7 +44,7 @@ export default function ModalGenerated({
         <dialog
             id="modal"
             ref={dialogRef}
-            className="flex w-full h-full max-w-none max-h-none items-center justify-center bg-black/50"
+            className={`flex w-full h-full max-w-none max-h-none items-center justify-center bg-black/50 ${isLoading ? 'cursor-wait' : 'cursor-default'}`}
             onClick={handleBackdropClick}
             onCancel={onClose}
         >
@@ -53,7 +53,6 @@ export default function ModalGenerated({
                 <div className="bg-cyan-200 aspect-9/16 w-80 sm:w-90 lg:w-100 xl:w-110 flex flex-col items-center justify-center rounded-lg">
                     <div className="bg-orange-200 animate-pulse aspect-9/16 w-80 sm:w-90 lg:w-100 xl:w-110 flex flex-col items-center justify-center rounded-lg">
                         <div className="animate-spin w-10 h-10 border-2 border-blue-500 border-b-transparent rounded-full mx-auto mb-4"></div>
-                        {/* <p>Generating ...</p> */}
                     </div>
                 </div>
             ) : (
@@ -64,7 +63,7 @@ export default function ModalGenerated({
                         </div>
                     )}
                     <div className="self-stretch w-4/16 rounded">
-                        {garments.map((garment: CartItem, index) => (
+                        {garments.map((garment: CartItemType, index) => (
                             <img key={index} src={garment.imageUrl} alt={garment.name || `Garment ${index + 1}`} className="rounded mb-1 lg:mb-2 " />
                         ))}
                     </div>

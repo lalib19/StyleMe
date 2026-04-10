@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface CartItem {
+export interface CartItemType {
   id: number;
   name: string;
   url: string;
@@ -10,7 +10,7 @@ export interface CartItem {
   customCategoryName: string;
 }
 
-export type CartState = CartItem[];
+export type CartState = CartItemType[];
 
 const initialState: CartState = [];
 
@@ -18,7 +18,7 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    selectItem(state, action: PayloadAction<CartItem>) {
+    selectItem(state, action: PayloadAction<CartItemType>) {
       const existingItem = state.find((item) => item.id === action.payload.id);
       if (existingItem) {
         return state.filter((item) => item.id !== action.payload.id);
@@ -26,7 +26,7 @@ const cartSlice = createSlice({
         state.push(action.payload);
       }
     },
-    loadFavorites(state, action: PayloadAction<CartItem[]>) {
+    loadFavorites(state, action: PayloadAction<CartItemType[]>) {
       return action.payload;
     },
     clearCart(state) {

@@ -8,7 +8,6 @@ import FilterNavigation from '../components/layout/filter-navigation';
 import { Red_Hat_Display } from "next/font/google";
 import { Toaster } from 'react-hot-toast';
 
-// Configure Red Hat Display font
 const redHatDisplay = Red_Hat_Display({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],

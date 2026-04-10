@@ -2,6 +2,11 @@ import { storeUserImage, getUserDataFromDB } from '@/src/lib/db';
 import { v2 as cloudinary } from 'cloudinary';
 import { auth } from '@/src/lib/auth';
 
+interface CloudinaryUploadResult {
+    secure_url: string;
+    public_id: string;
+}
+
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -55,13 +60,13 @@ export async function POST(request: Request) {
 
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        const uploadResult = await uploadImageToCloudinary(buffer);
-        await storeUserImage(session.user.email, (uploadResult as any).secure_url, (uploadResult as any).public_id);
+        const uploadResult = await uploadImageToCloudinary(buffer) as CloudinaryUploadResult;
+        await storeUserImage(session.user.email, uploadResult.secure_url, uploadResult.public_id);
 
         return new Response(JSON.stringify({
             message: "File uploaded successfully",
-            imageUrl: (uploadResult as any).secure_url,
-            publicId: (uploadResult as any).public_id,
+            imageUrl: uploadResult.secure_url,
+            publicId: uploadResult.public_id,
         }), { status: 200 });
     } catch (error) {
         console.error("Error processing file upload:", error);

@@ -1,8 +1,8 @@
-import { CartItem } from "@/src/store/cart-slice";
+import { CartItemType } from "@/src/store/cart-slice";
 import { ModelState } from "@/src/store/model-slice";
 
 interface GarmentSlotProps {
-    item: CartItem;
+    item: CartItemType;
     type: keyof Omit<ModelState, 'userImage'>;
     placeholderIcon: string;
     alt: string;

@@ -2,10 +2,12 @@
 
 import { signIn } from "next-auth/react"
 import { useRef, useState, FormEvent } from "react"
+import { useRouter } from "next/navigation"
 import Button from "./ui/Button"
 import Input from "./ui/Input"
 import { useAppSelector } from "../store/hooks"
 import { syncFavoritesToServer } from "../lib/favorites-api"
+import { redirect } from "next/dist/server/api-utils"
 
 async function createUser(email: string, password: string) {
     const response = await fetch("/api/auth/signup", {
@@ -28,6 +30,7 @@ export default function AuthForm() {
     const emailInput = useRef<HTMLInputElement | null>(null)
     const passwordInput = useRef<HTMLInputElement | null>(null)
     const favoriteItems = useAppSelector((state) => state.cart);
+    const router = useRouter();
 
 
     async function submitHandler(event: FormEvent) {
@@ -47,19 +50,23 @@ export default function AuthForm() {
         if (hasAccount) {
             const result = await signIn("credentials", {
                 email: enteredEmail,
-                password: enteredPassword
+                password: enteredPassword,
+                redirect: false
             })
 
             if (result?.error) {
                 setError(result.error ? result.error
                     : "Invalid email or password")
-                setIsLoading(false)
-            } else if (favoriteItems && favoriteItems.length > 0) {
-                try {
-                    await syncFavoritesToServer(favoriteItems);
-                } catch (favoriteError) {
-                    console.error("Failed to sync favorites:", favoriteError);
+                setIsLoading(false);
+            } else {
+                if (favoriteItems && favoriteItems.length > 0) {
+                    try {
+                        await syncFavoritesToServer(favoriteItems);
+                    } catch (favoriteError) {
+                        console.error("Failed to sync favorites:", favoriteError);
+                    }
                 }
+                router.push("/");
             }
         } else {
             try {
@@ -67,17 +74,21 @@ export default function AuthForm() {
 
                 const result = await signIn("credentials", {
                     email: enteredEmail,
-                    password: enteredPassword
+                    password: enteredPassword,
+                    redirect: false
                 });
 
                 if (result?.error) {
                     setError(result.error);
-                } else if (favoriteItems && favoriteItems.length > 0) {
-                    try {
-                        await syncFavoritesToServer(favoriteItems);
-                    } catch (favoriteError) {
-                        console.error("Failed to sync favorites:", favoriteError);
+                } else {
+                    if (favoriteItems && favoriteItems.length > 0) {
+                        try {
+                            await syncFavoritesToServer(favoriteItems);
+                        } catch (favoriteError) {
+                            console.error("Failed to sync favorites:", favoriteError);
+                        }
                     }
+                    router.push("/");
                 }
             } catch (error) {
                 setError(error instanceof Error ? error.message : "Something went wrong")

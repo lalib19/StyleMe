@@ -1,17 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CartItem } from "./cart-slice";
+import { CartItemType } from "./cart-slice";
 
 export interface ModelState {
     userImage: {
         imageUrl: string;
     };
-    top: CartItem;
-    bottom: CartItem;
-    shoes: CartItem;
-    accessory: CartItem;
+    top: CartItemType;
+    bottom: CartItemType;
+    shoes: CartItemType;
+    accessory: CartItemType;
 }
 
-export const initialCartItemState: CartItem = {
+export const initialCartItemTypeState: CartItemType = {
     id: 0,
     name: "",
     url: "",
@@ -25,10 +25,10 @@ const initialState: ModelState = {
     userImage: {
         imageUrl: "",
     },
-    top: { ...initialCartItemState },
-    bottom: { ...initialCartItemState },
-    shoes: { ...initialCartItemState },
-    accessory: { ...initialCartItemState }
+    top: { ...initialCartItemTypeState },
+    bottom: { ...initialCartItemTypeState },
+    shoes: { ...initialCartItemTypeState },
+    accessory: { ...initialCartItemTypeState }
 }
 
 const modelSlice = createSlice({
@@ -38,19 +38,19 @@ const modelSlice = createSlice({
         setUserImage(state, action: PayloadAction<{ imageUrl: string }>) {
             state.userImage.imageUrl = action.payload.imageUrl
         },
-        setTop(state, action: PayloadAction<CartItem>) {
+        setTop(state, action: PayloadAction<CartItemType>) {
             state.top = action.payload
         },
-        setBottom(state, action: PayloadAction<CartItem>) {
+        setBottom(state, action: PayloadAction<CartItemType>) {
             state.bottom = action.payload
         },
-        setShoes(state, action: PayloadAction<CartItem>) {
+        setShoes(state, action: PayloadAction<CartItemType>) {
             state.shoes = action.payload
         },
-        setAccessory(state, action: PayloadAction<CartItem>) {
+        setAccessory(state, action: PayloadAction<CartItemType>) {
             state.accessory = action.payload
         },
-        setItem(state, action: PayloadAction<{ type: keyof Omit<ModelState, 'userImage'>, item: CartItem }>) {
+        setItem(state, action: PayloadAction<{ type: keyof Omit<ModelState, 'userImage'>, item: CartItemType }>) {
             const { type, item } = action.payload;
             state[type] = item;
         }

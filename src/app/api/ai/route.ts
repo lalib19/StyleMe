@@ -1,9 +1,16 @@
+import * as fs from "node:fs";
 import { storeGeneratedImageData, storeUserImage } from "@/src/lib/db";
 import { GoogleGenAI } from "@google/genai";
 import { v2 as cloudinary } from 'cloudinary';
-import * as fs from "node:fs";
 import { uploadImageToCloudinary } from "../cloudinary/route";
 import { auth } from "@/src/lib/auth";
+import { incrementCachedGenerationCount } from "@/src/lib/redis";
+import { checkGenerationLimit } from "@/src/lib/generation-limits";
+
+interface CloudinaryUploadResult {
+    secure_url: string;
+    public_id: string;
+}
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -39,6 +46,30 @@ async function fetchImageAsBase64(imageUrl: string) {
 export async function POST(request: Request) {
     const { modelImageUrl, garments } = await request.json();
 
+    const session = await auth();
+    if (!session || !session.user?.email) {
+        return new Response(JSON.stringify({
+            message: "Authentication required"
+        }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
+    const limitCheck = await checkGenerationLimit(session.user.email);
+    if (!limitCheck.allowed) {
+        return new Response(JSON.stringify({
+            message: limitCheck.message,
+            currentCount: limitCheck.currentCount,
+            maxGenerations: limitCheck.maxGenerations
+        }), {
+            status: 429,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
+    console.log(`Starting AI generation (${limitCheck.currentCount + 1}/${limitCheck.maxGenerations})`);
+
     const prompt =
         "Put all the clothes that are in the center of each images on the model provided as the first image. Keep the model's identity and pose intact. If some garments are missing just keep the ones on the model.";
     const aspectRatio = '9:16';
@@ -73,22 +104,15 @@ export async function POST(request: Request) {
                 fs.writeFileSync("image.png", buffer);
                 console.log("Image saved as image.png");
 
-                const uploadResult = await uploadImageToCloudinary(buffer);
-                const session = await auth();
-                if (!session || !session.user?.email) {
-                    return new Response(JSON.stringify({
-                        message: "Authentication required"
-                    }), {
-                        status: 401,
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                }
-                await storeGeneratedImageData(session.user.email, modelImageUrl, garments, (uploadResult as any).secure_url);
+                const uploadResult = await uploadImageToCloudinary(buffer) as CloudinaryUploadResult;
+
+                await storeGeneratedImageData(session.user.email, modelImageUrl, garments, uploadResult.secure_url);
+                await incrementCachedGenerationCount(session.user.email);
 
                 return new Response(JSON.stringify({
                     message: "File uploaded successfully",
-                    imageUrl: (uploadResult as any).secure_url,
-                    publicId: (uploadResult as any).public_id
+                    imageUrl: uploadResult.secure_url,
+                    publicId: uploadResult.public_id
                 }), { status: 200 });
             }
         }

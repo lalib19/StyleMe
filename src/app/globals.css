@@ -3,6 +3,7 @@
 :root {
   --background: #e1d2d2;
   --foreground: #171717;
+  --color-background-secondary: #f1b9b9;
 }
 
 @theme inline {
@@ -16,6 +17,7 @@
   --color-custom-bg-sideSelector: #efe4e4;
   --color-brand-primary: #1a2b3c;
   --color-brand-secondary: #4a5b6c;
+  --color-background-secondary: #f1b9b9;
 
 }
 

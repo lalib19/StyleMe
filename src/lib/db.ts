@@ -1,7 +1,27 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { NextResponse } from "next/server";
-import { CartItem } from "../store/cart-slice";
+import { CartItemType } from "../store/cart-slice";
 
+// Type definitions for database documents
+interface UserImage {
+    imageUrl: string;
+    publicId?: string | null;
+}
+
+interface GenerationData {
+    userImage: string;
+    garments: CartItemType[];
+    generatedImageUrl: string;
+    timestamp: Date;
+    id: number;
+}
+
+interface UserDocument {
+    email: string;
+    favoriteItems?: CartItemType[];
+    userImage?: UserImage;
+    generations?: GenerationData[];
+}
 
 export async function connectToDb(): Promise<MongoClient> {
     if (!process.env.MONGODB_URI) {
@@ -17,11 +37,11 @@ export async function connectToDb(): Promise<MongoClient> {
     return client;
 }
 
-export async function storeFavoriteItems(userEmail: string, favoriteItems: CartItem[]) {
+export async function storeFavoriteItems(userEmail: string, favoriteItems: CartItemType[]) {
     const client = await connectToDb();
     try {
         const db = client.db();
-        await db.collection("users").updateOne(
+        await db.collection<UserDocument>("users").updateOne(
             { email: userEmail },
             { $set: { favoriteItems: favoriteItems } },
             { upsert: true }
@@ -38,12 +58,12 @@ export async function storeUserImage(userEmail: string, imageUrl: string | null,
     try {
         const db = client.db();
         if (!imageUrl) {
-            await db.collection('users').updateOne(
+            await db.collection<UserDocument>('users').updateOne(
                 { email: userEmail },
                 { $unset: { "userImage": "" } },
             )
         } else {
-            await db.collection('users').updateOne(
+            await db.collection<UserDocument>('users').updateOne(
                 { email: userEmail },
                 { $set: { "userImage": { imageUrl, publicId } } },
                 { upsert: true }
@@ -59,12 +79,12 @@ export async function storeUserImage(userEmail: string, imageUrl: string | null,
     }
 }
 
-export async function storeGeneratedImageData(userEmail: string, userImage: { imageUrl: string, publicId: string }, garments: CartItem[], generatedImageUrl: string) {
+export async function storeGeneratedImageData(userEmail: string, userImage: string, garments: CartItemType[], generatedImageUrl: string) {
     const client = await connectToDb();
     try {
         const db = client.db();
 
-        const generationData = {
+        const generationData: GenerationData = {
             userImage,
             garments,
             generatedImageUrl,
@@ -72,9 +92,9 @@ export async function storeGeneratedImageData(userEmail: string, userImage: { im
             id: new Date().getTime()
         };
 
-        await db.collection('users').updateOne(
+        await db.collection<UserDocument>('users').updateOne(
             { email: userEmail },
-            { $push: { generations: generationData } } as any
+            { $push: { generations: generationData } }
         );
 
         return NextResponse.json({ success: true });
@@ -90,7 +110,7 @@ export async function getUserDataFromDB(userEmail: string) {
     const client = await connectToDb()
     try {
         const db = client.db()
-        const user = await db.collection("users").findOne({ email: userEmail })
+        const user = await db.collection<UserDocument>("users").findOne({ email: userEmail })
         return { favorites: user?.favoriteItems || null, userImage: user?.userImage || null, generations: user?.generations || [] }
     } catch (error) {
         console.log("Error retrieving favorite items:", error);

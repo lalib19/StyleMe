@@ -1,10 +1,6 @@
-/**
- * Client-side API functions for favorites management
- */
+import { CartItemType } from "../store/cart-slice";
 
-import { CartItem } from "../store/cart-slice";
-
-export async function syncFavoritesToServer(favoriteItems: CartItem[]): Promise<{ success: boolean }> {
+export async function syncFavoritesToServer(favoriteItems: CartItemType[]): Promise<{ success: boolean }> {
     const response = await fetch("/api/favorites", {
         method: "PUT",
         body: JSON.stringify({ favoriteItems }),
@@ -20,14 +16,3 @@ export async function syncFavoritesToServer(favoriteItems: CartItem[]): Promise<
     return data;
 }
 
-export async function fetchFavoritesFromServer(): Promise<{ favorites: number[] }> {
-    const response = await fetch("/api/favorites");
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch favorites from server");
-    }
-
-    return data;
-}

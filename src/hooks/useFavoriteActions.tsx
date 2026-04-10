@@ -2,16 +2,16 @@
 
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { CartState, CartItem, clearCart, selectItem } from "../store/cart-slice";
+import { CartState, CartItemType, clearCart, selectItem } from "../store/cart-slice";
 import { ModelState, setItem } from "../store/model-slice";
-import { initialCartItemState } from "../store/model-slice";
+import { initialCartItemTypeState } from "../store/model-slice";
 
 export function useFavoriteActions() {
     const { data: session } = useSession();
     const dispatch = useAppDispatch();
     const model: ModelState = useAppSelector((state) => state.model);
 
-    const toggleFavorite = async (item: CartItem, currentFavorites: CartState) => {
+    const toggleFavorite = async (item: CartItemType, currentFavorites: CartState) => {
         const modelGarmentEntries = [
             { key: 'top', garment: model.top },
             { key: 'bottom', garment: model.bottom },
@@ -23,7 +23,7 @@ export function useFavoriteActions() {
         const isInModel = !!matchingEntry;
 
         if (isInModel) {
-            dispatch(setItem({ type: matchingEntry.key as keyof Omit<ModelState, 'userImage'>, item: { ...initialCartItemState } }));
+            dispatch(setItem({ type: matchingEntry.key as keyof Omit<ModelState, 'userImage'>, item: { ...initialCartItemTypeState } }));
             dispatch(selectItem(item));
         } else {
             dispatch(selectItem(item));
@@ -57,7 +57,7 @@ export function useFavoriteActions() {
     const clearFavorites = async () => {
         if (session?.user?.email) {
             try {
-                const response = await fetch("api/favorites", {
+                const response = await fetch("/api/favorites", {
                     method: "PUT",
                     body: JSON.stringify({
                         userEmail: session.user.email,

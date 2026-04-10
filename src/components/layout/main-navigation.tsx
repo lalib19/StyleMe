@@ -6,11 +6,14 @@ import { useAppDispatch, useAppSelector } from "@/src/store/hooks"
 import { useSession, signOut } from "next-auth/react"
 import NavLink from "../ui/NavLink"
 import { selectGender } from "@/src/store/filter-slice";
+import { useGenerationCount } from "@/src/hooks/useGenerationCount";
 
 export default function MainNavigation() {
     const items = useAppSelector((state) => state.cart);
+    const newGenerations = useAppSelector((state) => state.generations.newGenerations);
     const dispatch = useAppDispatch()
     const { data: session } = useSession();
+    const { remaining, isAtLimit, isWarning, maxGenerations } = useGenerationCount();
 
     function handleSignOut() {
         signOut({ callbackUrl: "/" });
@@ -39,7 +42,23 @@ export default function MainNavigation() {
                                 <p className="text-black text-xs ">{items.length > 9 ? "9+" : items.length}</p>
                             </div>
                         )}
+                        {newGenerations && (
+                            <div className="absolute -top-1 -left-2 w-3 h-3 bg-red-500 rounded-full"></div>
+                        )}
                     </Link></li>
+                    {session && (
+                        <li className="relative">
+                            <div className={`flex items-center px-2 py-1 rounded-md text-sm font-medium ${isAtLimit
+                                    ? 'bg-red-100 text-red-700'
+                                    : isWarning
+                                        ? 'bg-yellow-100 text-yellow-700'
+                                        : 'bg-green-100 text-green-700'
+                                }`}>
+                                <span className="text-xs">⚡</span>
+                                <span className="ml-1">{remaining}/{maxGenerations}</span>
+                            </div>
+                        </li>
+                    )}
                 </ul>
             </nav>
         </header>

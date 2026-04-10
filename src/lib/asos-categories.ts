@@ -20,9 +20,9 @@ export const asosCategories = {
             id: "8799", // Dresses View All
             name: "Dresses"
         },
-        jeans: {
+        pants: {
             id: "52535", // Denim Shop View all
-            name: "Jeans & Denim"
+            name: "Jeans & Pants"
         },
         shoes: {
             id: "6992", // New In Shoes
@@ -42,7 +42,7 @@ export const asosCategories = {
             id: "9172",    // Graphic Tees
             name: "Tops & Clothing"
         },
-        jeans: {
+        pants: {
             id: "5230", // Straight Leg Jeans
             name: "Jeans & Pants"
         },
