@@ -21,7 +21,7 @@ cloudinary.config({
 });
 
 
-async function fetchImageAsBase64(imageUrl: string, maxRetries = 3) {
+async function fetchImageAsBase64(imageUrl: string, maxRetries = 3): Promise<{ inlineData: { data: string; mimeType: string } }> {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             // Start simple, add complexity only on retries
@@ -130,6 +130,9 @@ async function fetchImageAsBase64(imageUrl: string, maxRetries = 3) {
             await new Promise(resolve => setTimeout(resolve, delay));
         }
     }
+
+    // This should never be reached, but TypeScript needs it for type safety
+    throw new Error('Unexpected end of function');
 }
 
 export async function POST(request: Request) {
@@ -169,7 +172,21 @@ export async function POST(request: Request) {
     console.log('Model image fetched successfully');
 
     console.log('Fetching garment images:', garments.length, 'items');
-    const garmentsImages = await Promise.all(garments.map((garment: { imageUrl: string }) => fetchImageAsBase64(garment.imageUrl)));
+
+    // Fetch images sequentially with 1 second delay to avoid bot detection
+    const garmentsImages = [];
+    for (let i = 0; i < garments.length; i++) {
+        console.log(`Fetching garment ${i + 1}/${garments.length}...`);
+        const image = await fetchImageAsBase64(garments[i].imageUrl);
+        garmentsImages.push(image);
+
+        // Add 1 second delay between requests (except for the last one)
+        if (i < garments.length - 1) {
+            console.log('Waiting 1 second before next request...');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    }
+
     console.log('All garment images fetched successfully');
 
     const response = await ai.models.generateContent({
