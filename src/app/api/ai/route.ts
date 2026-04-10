@@ -22,16 +22,16 @@ cloudinary.config({
 
 
 async function fetchImageAsBase64(imageUrl: string): Promise<{ inlineData: { data: string; mimeType: string } }> {
-    // Use Cloudinary fetch API to bypass ASOS CDN protection
-    // Format: https://res.cloudinary.com/{cloud_name}/image/fetch/f_auto,q_auto/{remote_url}
-    const cloudinaryFetchUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/fetch/f_auto,q_auto/${imageUrl}`;
+    // Use Cloudinary proxy to bypass ASOS CDN protection
+    const encodedUrl = encodeURIComponent(imageUrl);
+    const cloudinaryFetchUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/fetch/f_jpg,q_auto/${encodedUrl}`;
+
+    console.log(`Fetching via Cloudinary: ${cloudinaryFetchUrl}`);
 
     const response = await fetch(cloudinaryFetchUrl);
 
     if (!response.ok) {
-        // Log the full error for debugging
-        console.error(`Cloudinary fetch failed for ${imageUrl}:`, response.status, response.statusText);
-        console.error(`Cloudinary URL: ${cloudinaryFetchUrl}`);
+        console.error(`Cloudinary fetch failed:`, response.status, response.statusText);
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
