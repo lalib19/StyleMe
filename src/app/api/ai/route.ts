@@ -24,44 +24,92 @@ cloudinary.config({
 async function fetchImageAsBase64(imageUrl: string, maxRetries = 3) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
+            // Start simple, add complexity only on retries
+            const isRetry = attempt > 1;
+
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+            const timeoutId = setTimeout(() => controller.abort(), isRetry ? 30000 : 15000);
+
+            // Add delay only on retries
+            if (isRetry) {
+                const delay = Math.random() * 2000 + 1000;
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+
+            const headers: Record<string, string> = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8'
+            };
+
+            // Add more headers only on retries to mimic browser better
+            if (isRetry) {
+                Object.assign(headers, {
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Referer': 'https://www.asos.com/',
+                    'Cache-Control': 'no-cache',
+                    'Sec-Fetch-Site': 'cross-site',
+                    'Sec-Fetch-Mode': 'no-cors',
+                    'Sec-Fetch-Dest': 'image'
+                });
+            }
 
             const response = await fetch(imageUrl, {
                 signal: controller.signal,
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                    'Accept': 'image/webp,image/avif,image/*,*/*;q=0.8',
-                    'Accept-Language': 'en-US,en;q=0.9',
-                    'Accept-Encoding': 'gzip, deflate, br',
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache',
-                    'Referer': 'https://www.asos.com/',
-                    'Origin': 'https://www.asos.com',
-                    'Sec-Fetch-Site': 'cross-site',
-                    'Sec-Fetch-Mode': 'no-cors',
-                    'Sec-Fetch-Dest': 'image',
-                    'Connection': 'keep-alive',
-                    'DNT': '1'
-                }
+                headers
             });
 
             clearTimeout(timeoutId);
-            const contentType = response.headers.get('Content-Type');
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                // Extract additional error information
+                const errorHeaders = Object.fromEntries(response.headers.entries());
+                let errorBody = '';
+
+                try {
+                    // Try to read response body for more details
+                    const contentType = response.headers.get('content-type');
+                    if (contentType?.includes('text') || contentType?.includes('json')) {
+                        errorBody = await response.text();
+                    }
+                } catch (bodyError) {
+                    console.warn('Could not read error response body:', bodyError);
+                }
+
+                // Log detailed error information
+                console.error(`❌ Request failed for ${imageUrl}:`, {
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: errorHeaders,
+                    body: errorBody.substring(0, 500), // Limit body length
+                    attempt: attempt
+                });
+
+                // Look for specific error indicators
+                const cloudflareBlocked = errorHeaders['cf-ray'] && response.status === 403;
+                const rateLimited = errorHeaders['retry-after'] || response.status === 429;
+                const botDetection = errorBody.toLowerCase().includes('bot') ||
+                    errorBody.toLowerCase().includes('automated') ||
+                    errorHeaders['x-blocked-reason'];
+
+                let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+
+                if (cloudflareBlocked) {
+                    errorMessage += ' (Cloudflare protection detected)';
+                } else if (botDetection) {
+                    errorMessage += ' (Bot detection triggered)';
+                } else if (rateLimited) {
+                    errorMessage += ` (Rate limited - retry after: ${errorHeaders['retry-after'] || 'unknown'})`;
+                }
+
+                throw new Error(errorMessage);
             }
 
-            let imageArrayBuffer: ArrayBuffer;
-            try {
-                imageArrayBuffer = await response.arrayBuffer();
-            } catch (error) {
-                console.error("Error fetching image as array buffer:", error);
-                throw new Error("Failed to fetch image data");
-            }
-
+            const imageArrayBuffer = await response.arrayBuffer();
             const base64ImageData = Buffer.from(imageArrayBuffer).toString('base64');
+            const contentType = response.headers.get('Content-Type') || 'image/jpeg';
+
+            console.log(`✓ Successfully fetched ${imageUrl} on attempt ${attempt}`);
 
             return {
                 inlineData: {
@@ -77,8 +125,9 @@ async function fetchImageAsBase64(imageUrl: string, maxRetries = 3) {
                 throw new Error(`Failed to fetch image after ${maxRetries} attempts: ${error}`);
             }
 
-            // Wait before retry (exponential backoff)
-            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+            // Simple exponential backoff
+            const delay = Math.pow(2, attempt) * 1000;
+            await new Promise(resolve => setTimeout(resolve, delay));
         }
     }
 }
