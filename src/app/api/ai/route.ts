@@ -112,7 +112,6 @@ export async function POST(request: Request) {
             const imageData: string | undefined = part.inlineData.data;
             if (imageData) {
                 const buffer = Buffer.from(imageData, "base64");
-
                 const uploadResult = await uploadImageToCloudinary(buffer) as CloudinaryUploadResult;
 
                 await storeGeneratedImageData(session.user.email, modelImageUrl, garmentsImages, uploadResult.secure_url);
