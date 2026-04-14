@@ -8,6 +8,7 @@ export interface CartItemType {
   price: string;
   categoryName: string;
   customCategoryName: string;
+  additionalImageUrls?: string[];
 }
 
 export type CartState = CartItemType[];

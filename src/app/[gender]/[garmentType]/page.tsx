@@ -24,7 +24,7 @@ export default async function GarmentPage({ params }: PageProps) {
                 return (
                     <div key={category.categoryName}>
                         <p className="text-5xl font-bold m-4 ml-50">{category.categoryName}</p>
-                        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-4 max-w-[1400px] p-5 mx-auto">
+                        <ul className="grid grid-cols-[repeat(auto-fit,minmax(250px,250px))] gap-x-4 gap-y-2 p-5 mx-auto justify-center">
                             {category.items && category.items.length > 0 ? (
                                 <ClothingItems items={category.items} />
                             ) : (

@@ -23,6 +23,7 @@ export type SearchResultItem = {
     };
     categoryName: string;
     customCategoryName: string;
+    additionalImageUrls?: string[];
 };
 
 // Extend NextAuth types

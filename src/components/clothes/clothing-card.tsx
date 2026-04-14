@@ -6,14 +6,15 @@ import { useFavoriteActions } from "@/src/hooks/useFavoriteActions";
 import { useAppSelector } from "@/src/store/hooks";
 import { CartItemType } from "@/src/store/cart-slice";
 import { SearchResultItem } from "@/src/types";
+import Image from "next/image";
 
 export default function ClothingCard({ item, isFavorite = false }: { item: CartItemType | SearchResultItem, isFavorite?: boolean }) {
     const imageUrlPath = `https://${item.imageUrl}`;
+    const secondaryImageUrlPath = item.additionalImageUrls && item.additionalImageUrls.length > 0 ? `https://${item.additionalImageUrls[0]}` : imageUrlPath;
     const cart = useAppSelector((state) => state.cart);
     const iconPath = `${cart.some(i => i.id === item.id) ? "/icons/icons8-heart-48-filled.png" : "/icons/icons8-heart-48.png"}`
     const browserLanguage = useBrowserLanguage()
     const { toggleFavorite } = useFavoriteActions();
-    const favoriteItems = useAppSelector((state) => state.cart);
 
     const handleSelectItem = (item: CartItemType) => {
         toggleFavorite(item, cart);
@@ -21,14 +22,23 @@ export default function ClothingCard({ item, isFavorite = false }: { item: CartI
 
     return (
         <li key={item.id} className="bg-background-secondary shadow-xl max-w-70 hover:scale-101 transition-transform">
-            {/* <li key={item.id} className="w-60 shadow-xl sm:h-auto sm:max-w-80 hover:scale-101 transition-transform"> */}
             <a href={`https://asos.com/${browserLanguage}/${item.url} `} target="_blank" rel="noopener noreferrer" >
-                <div className="relative">
-                    <img
+                <div className="relative group">
+                    <Image
                         src={imageUrlPath}
                         alt={item.name || "Product image"}
                         loading="lazy"
                         className=" w-full h-auto object-cover"
+                        width={300}
+                        height={400}
+                    />
+                    <Image
+                        src={secondaryImageUrlPath}
+                        alt={item.name || "Product image"}
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-auto object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        width={300}
+                        height={400}
                     />
                     {isFavorite && <AddToModel item={item as CartItemType} customCategoryName={item.customCategoryName} />}
                     <button
@@ -50,9 +60,9 @@ export default function ClothingCard({ item, isFavorite = false }: { item: CartI
                         <img src={iconPath} className="hover:scale-105 transition-transform " alt="heart" height={30} width={30} />
                     </button>
                 </div>
-                <div className="flex p-4 text-sm items-center">
-                    <p className="w-2/3" >{item.name}</p>
-                    <p className="w-1/3 text-right">{isFavorite ? (item as CartItemType).price : (item as SearchResultItem).price.current.text}</p>
+                <div className="flex p-4 text-sm justify-between items-center">
+                    <p className="">{item.name}</p>
+                    <p className="ml-3">{isFavorite ? (item as CartItemType).price : (item as SearchResultItem).price.current.text}</p>
                 </div>
             </a>
         </li>)

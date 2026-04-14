@@ -50,7 +50,7 @@ async function fetchImageAsBase64(imageUrl: string): Promise<{ inlineData: { dat
 }
 
 export async function POST(request: Request) {
-    const { modelImageUrl, garmentsImages } = await request.json();
+    const { modelImageUrl, garments, garmentsImagesData } = await request.json();
 
     const session = await auth();
     if (!session || !session.user?.email) {
@@ -85,12 +85,12 @@ export async function POST(request: Request) {
     const modelImage = await fetchImageAsBase64(modelImageUrl);
     console.log('Model image fetched successfully');
 
-    console.log('Fetching garment images:', garmentsImages.length, 'items');
+    console.log('Fetching garment images:', garmentsImagesData.length, 'items');
     // const garmentsImages = await Promise.all(garments.map((garment: { imageUrl: string }) => fetchImageAsBase64(garment.imageUrl)));
 
     const response = await ai.models.generateContent({
         model: 'gemini-3.1-flash-image-preview',
-        contents: [{ text: prompt }, modelImage, ...garmentsImages],
+        contents: [{ text: prompt }, modelImage, ...garmentsImagesData],
         config: {
             responseModalities: ['TEXT', 'IMAGE'],
             imageConfig: {
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
                 const buffer = Buffer.from(imageData, "base64");
                 const uploadResult = await uploadImageToCloudinary(buffer) as CloudinaryUploadResult;
 
-                await storeGeneratedImageData(session.user.email, modelImageUrl, garmentsImages, uploadResult.secure_url);
+                await storeGeneratedImageData(session.user.email, modelImageUrl, garments, uploadResult.secure_url);
                 await incrementCachedGenerationCount(session.user.email);
 
                 return new Response(JSON.stringify({

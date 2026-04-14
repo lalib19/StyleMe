@@ -7,6 +7,7 @@ import { asosCategories } from "@/src/lib/asos-categories";
 import GarmentSelector from "@/src/components/layout/garment-selector";
 import ClothingCard from "@/src/components/clothes/clothing-card";
 import Link from "next/link";
+import Image from "next/image";
 import { GenerationDataType, setNewGenerations } from "@/src/store/generations-slice";
 import ModelClothingDetail from "@/src/components/clothes/generation-data";
 import { motion, AnimatePresence } from "framer-motion";
