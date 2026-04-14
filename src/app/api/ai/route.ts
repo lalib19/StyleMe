@@ -112,8 +112,6 @@ export async function POST(request: Request) {
             const imageData: string | undefined = part.inlineData.data;
             if (imageData) {
                 const buffer = Buffer.from(imageData, "base64");
-                fs.writeFileSync("image.png", buffer);
-                console.log("Image saved as image.png");
 
                 const uploadResult = await uploadImageToCloudinary(buffer) as CloudinaryUploadResult;
 
