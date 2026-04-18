@@ -1,5 +1,6 @@
 import { CartItemType } from "@/src/store/cart-slice";
 import { ModelState } from "@/src/store/model-slice";
+import styles from "../layout/garment-selector.module.css";
 
 interface GarmentSlotProps {
     item: CartItemType;
@@ -12,13 +13,13 @@ interface GarmentSlotProps {
 export default function GarmentSlot({ item, type, placeholderIcon, alt, onRemove }: GarmentSlotProps) {
     return (
         <div
-            className="garment-items cursor-pointer relative group"
+            className={`${styles.garmentItems} cursor-pointer relative group`}
             onClick={() => item.imageUrl ? onRemove(type) : undefined}
         >
             {item.imageUrl ? (
                 <div className="relative">
                     <img
-                        className="garment-image transition-opacity duration-300 group-hover:opacity-50"
+                        className={`${styles.garmentImage} transition-opacity duration-300 group-hover:opacity-50`}
                         src={item.imageUrl}
                         alt={alt}
                     />
@@ -29,7 +30,7 @@ export default function GarmentSlot({ item, type, placeholderIcon, alt, onRemove
                     </div>
                 </div>
             ) : (
-                <img className="garment-placeholder" src={placeholderIcon} alt={alt} />
+                <img className={styles.garmentPlaceholder} src={placeholderIcon} alt={alt} />
             )}
         </div>
     );

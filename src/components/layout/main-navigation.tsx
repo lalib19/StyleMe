@@ -25,8 +25,8 @@ export default function MainNavigation() {
             </Link>
             <nav>
                 <ul className="flex space-x-4">
-                    <li><NavLink onClick={() => dispatch(selectGender("men"))} href="/men">Men</NavLink></li>
-                    <li><NavLink onClick={() => dispatch(selectGender("women"))} href="/women">Women</NavLink></li>
+                    <li><NavLink onClick={() => dispatch(selectGender("men"))} href="/men/top">Men</NavLink></li>
+                    <li><NavLink onClick={() => dispatch(selectGender("women"))} href="/women/top">Women</NavLink></li>
                     {session ? (
                         <>
                             <li><button className="text-lg hover:underline hover:cursor-pointer" onClick={handleSignOut} >Logout</button></li>

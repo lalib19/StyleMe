@@ -1,6 +1,6 @@
 "use client"
 
-import "./garment-selector.css"
+import styles from "./garment-selector.module.css"
 import Button from "../ui/Button";
 import ImageGeneration from "../ai/image-generation";
 import GarmentSlot from "../ui/GarmentSlot";
@@ -80,12 +80,12 @@ export default function GarmentSelector() {
     return (
         <div className="flex flex-col h-2/3 sm:h-4/5 lg:h-4/5 w-30 sm:w-40 lg:w-40 fixed top-40 sm:top-40 lg:top-26 right-2 sm:right-3 lg:right-5 justify-center items-center z-50">
             <div className="flex flex-col  border-custom-bg-nav border-2 sm:border-3 lg:border-5 rounded-xl lg:rounded-2xl mt-20 sm:mt-5 mb-5 w-full" >
-                <div className="garment-items border-b-0! cursor-pointer relative group" onClick={() => deleteModelImage()}>
+                <div className={`${styles.garmentItems} border-b-0! cursor-pointer relative group`} onClick={() => deleteModelImage()}>
                     {model.userImage.imageUrl ? (isUploading || isDeleting ? <div className="flex items-center gap-2">
                         <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     </div> : (
                         <div className="relative">
-                            <img className="garment-image transition-opacity duration-300 group-hover:opacity-50" src={model.userImage.imageUrl} alt="Model Image" />
+                            <img className={`${styles.garmentImage} transition-opacity duration-300 group-hover:opacity-50`} src={model.userImage.imageUrl} alt="Model Image" />
                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <div className="bg-red-500 rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
                                     <span className="text-white text-sm font-bold">×</span>

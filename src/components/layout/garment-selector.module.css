@@ -1,0 +1,59 @@
+.garmentItems {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  width: 100%;
+  max-height: 100%;
+  border-bottom: 1px dashed black;
+}
+
+.garmentImage {
+  height: 7rem;
+  object-fit: contain;
+  object-position: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.garmentPlaceholder {
+  width: 6rem;
+  height: 6rem;
+  transition: all 0.2s ease-in-out;
+}
+
+
+@media (min-width: 640px) {
+  .garmentItems {
+    flex: auto;
+    gap: 0.25rem;
+  }
+  
+  .garmentImage {
+    height: 7rem;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .garmentPlaceholder {
+    width: 6.5rem;
+    height: 6.5rem;
+  }
+}
+
+/* @media (min-width: 1024px) {
+  .garmentItems {
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+  
+  .garmentImage {
+    height: 8rem;
+  }
+
+  .garmentPlaceholder {
+    width: 7rem;
+    height: 7rem;
+  }
+} */

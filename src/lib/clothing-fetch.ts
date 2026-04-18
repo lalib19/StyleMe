@@ -70,9 +70,12 @@ export const getClothingItemss =
             const categoryIds = getCategoryId(garmentType, gender);
             const idsToProcess = Array.isArray(categoryIds) ? categoryIds : [categoryIds]
             for (const categoryId of idsToProcess) {
-                const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${categoryId}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US`;
+                const url = `https://asos2.p.rapidapi.com/products/v2/list?store=US&offset=0&categoryId=${categoryId}&country=US&sort=freshness&currency=USD&sizeSchema=US&limit=48&lang=en-US&_t=${Date.now()}`;
                 try {
-                    const response = await fetch(url, options);
+                    const response = await fetch(url, {
+                        ...options,
+                        cache: 'no-store'  // Bypass Next.js fetch cache
+                    });
                     if (!response.ok) {
                         console.error(`API Error: ${response.status} for category ${categoryId}`, await response.text());
                         itemCategories.push({ items: [], categoryName: null, customCategoryName: null });
